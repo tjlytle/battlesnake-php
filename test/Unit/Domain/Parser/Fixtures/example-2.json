@@ -1,0 +1,124 @@
+{
+  "game": {
+    "id": "game-10fe20ec-94ad-22ea-aa25",
+    "ruleset": {
+      "name": "royale",
+      "version": "v1.1.0",
+      "settings": {
+        "foodSpawnChance": 15,
+        "minimumFood": 2,
+        "hazardDamagePerTurn": 20,
+        "royaleSettings": {
+          "shrinkEveryNTurns": 5
+        }
+      }
+    },
+    "timeout": 600,
+    "source": "arena"
+  },
+  "turn": 27,
+  "board": {
+    "height": 15,
+    "width": 15,
+    "food": [
+      {"x": 7, "y": 7},
+      {"x": 3, "y": 12},
+      {"x": 10, "y": 4}
+    ],
+    "hazards": [
+      {"x": 0, "y": 0},
+      {"x": 0, "y": 1},
+      {"x": 1, "y": 0},
+      {"x": 14, "y": 14},
+      {"x": 14, "y": 13},
+      {"x": 13, "y": 14}
+    ],
+    "snakes": [
+      {
+        "id": "snake-a97f8603-bb19-47c8-a48b",
+        "name": "Sneaky Snake",
+        "health": 75,
+        "body": [
+          {"x": 10, "y": 10},
+          {"x": 10, "y": 9},
+          {"x": 9, "y": 9},
+          {"x": 8, "y": 9},
+          {"x": 7, "y": 9}
+        ],
+        "latency": "55",
+        "head": {"x": 10, "y": 10},
+        "length": 5,
+        "shout": "I'm going to win!",
+        "squad": "team-1",
+        "customizations": {
+          "color": "#FF00FF",
+          "head": "tiger",
+          "tail": "sharp"
+        }
+      },
+      {
+        "id": "snake-c14d2051-33a1-42b4-91c2",
+        "name": "Hissy Snake",
+        "health": 92,
+        "body": [
+          {"x": 5, "y": 5},
+          {"x": 4, "y": 5},
+          {"x": 3, "y": 5},
+          {"x": 2, "y": 5}
+        ],
+        "latency": "32",
+        "head": {"x": 5, "y": 5},
+        "length": 4,
+        "shout": "I'm hungry!",
+        "squad": "team-2",
+        "customizations": {
+          "color": "#0000FF",
+          "head": "silly",
+          "tail": "curled"
+        }
+      },
+      {
+        "id": "snake-f1ad3c27-9d59-4a58-8087",
+        "name": "Dangerous Snake",
+        "health": 35,
+        "body": [
+          {"x": 12, "y": 2},
+          {"x": 12, "y": 3},
+          {"x": 12, "y": 4}
+        ],
+        "latency": "78",
+        "head": {"x": 12, "y": 2},
+        "length": 3,
+        "shout": "Look out!",
+        "squad": "team-2",
+        "customizations": {
+          "color": "#FFFF00",
+          "head": "safe",
+          "tail": "hook"
+        }
+      }
+    ]
+  },
+  "you": {
+    "id": "snake-a97f8603-bb19-47c8-a48b",
+    "name": "Sneaky Snake",
+    "health": 75,
+    "body": [
+      {"x": 10, "y": 10},
+      {"x": 10, "y": 9},
+      {"x": 9, "y": 9},
+      {"x": 8, "y": 9},
+      {"x": 7, "y": 9}
+    ],
+    "latency": "55",
+    "head": {"x": 10, "y": 10},
+    "length": 5,
+    "shout": "I'm going to win!",
+    "squad": "team-1",
+    "customizations": {
+      "color": "#FF00FF",
+      "head": "tiger",
+      "tail": "sharp"
+    }
+  }
+}
