@@ -10,8 +10,11 @@ use BattleSnake\Domain\Coordinate;
 use BattleSnake\Domain\Game;
 use BattleSnake\Domain\GameState;
 use BattleSnake\Domain\Parser\GameStateParser;
+use BattleSnake\Tests\Unit\Domain\Parser\Fixture\AnotherTest;
+use BattleSnake\Tests\Unit\Domain\Parser\Fixture\TwoPlayerStart;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Yaml\Yaml;
 
 final class GameStateParserTest extends TestCase
 {
@@ -28,7 +31,24 @@ final class GameStateParserTest extends TestCase
         $this->parser = new GameStateParser();
         $this->fixturesDir = __DIR__ . '/Fixtures';
     }
-    
+
+    #[Test]
+    #[DataProvider('provideJsonExamples')]
+    public function parse_returns_expected_GameState(string $json, GameState $expectedGameState): void
+    {
+        $state = $this->parser->parse(json_decode($json, true));
+        self::assertEquals($expectedGameState, $state);
+    }
+
+    public static function provideJsonExamples(): \Generator
+    {
+        $fixture = new TwoPlayerStart();
+        yield $fixture->getLabel() => [
+            'json' => $fixture->getJson(),
+            'expectedGameState' => $fixture->getState(),
+        ];
+    }
+
     /**
      * @return array<string, array<int, string>>
      */

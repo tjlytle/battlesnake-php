@@ -52,7 +52,8 @@ final class GameStateParser implements GameStateParserInterface
             $data['id'] ?? '',
             $ruleset,
             $data['map'] ?? '',
-            $data['source'] ?? ''
+            $data['source'] ?? '',
+            isset($data['timeout']) ? (int)$data['timeout'] : null
         );
     }
 
@@ -126,19 +127,19 @@ final class GameStateParser implements GameStateParserInterface
     private function parseRulesetSettings(array $data): RulesetSettings
     {
         $royaleSettings = null;
-        if (isset($data['royaleSettings']) && is_array($data['royaleSettings'])) {
+        if (isset($data['royale']) && is_array($data['royale'])) {
             $royaleSettings = new RoyaleSettings(
-                (int)($data['royaleSettings']['shrinkEveryNTurns'] ?? 0)
+                (int)($data['royale']['shrinkEveryNTurns'] ?? 0)
             );
         }
 
         $squadSettings = null;
-        if (isset($data['squadSettings']) && is_array($data['squadSettings'])) {
+        if (isset($data['squad']) && is_array($data['squad'])) {
             $squadSettings = new SquadSettings(
-                (bool)($data['squadSettings']['allowBodyCollisions'] ?? false),
-                (bool)($data['squadSettings']['sharedElimination'] ?? false),
-                (bool)($data['squadSettings']['sharedHealth'] ?? false),
-                (bool)($data['squadSettings']['sharedLength'] ?? false)
+                (bool)($data['squad']['allowBodyCollisions'] ?? false),
+                (bool)($data['squad']['sharedElimination'] ?? false),
+                (bool)($data['squad']['sharedHealth'] ?? false),
+                (bool)($data['squad']['sharedLength'] ?? false)
             );
         }
 

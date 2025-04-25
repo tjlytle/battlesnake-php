@@ -10,6 +10,7 @@ use BattleSnake\Handler\MoveHandler;
 use BattleSnake\Handler\NotFoundHandler;
 use BattleSnake\Handler\StartHandler;
 use BattleSnake\Middleware\DispatchMiddleware;
+use BattleSnake\Middleware\RequestLoggingMiddleware;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
@@ -46,6 +47,7 @@ class Application
         // Create the queue request handler
         $this->queue_handler = new QueueRequestHandler($fallback_handler);
 
+        $this->queue_handler->add(new RequestLoggingMiddleware());
         // Add the API dispatch middleware to the queue
         $this->queue_handler->add($api_dispatch);
     }
