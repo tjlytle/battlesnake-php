@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace BattleSnake\Domain\Parser;
 
 use BattleSnake\Domain\Battlesnake;
+use BattleSnake\Domain\BattlesnakeCollection;
 use BattleSnake\Domain\Board;
 use BattleSnake\Domain\Coordinate;
+use BattleSnake\Domain\CoordinateCollection;
+use BattleSnake\Domain\Customizations;
 use BattleSnake\Domain\Game;
 use BattleSnake\Domain\GameState;
 use BattleSnake\Domain\Ruleset;
@@ -65,20 +68,23 @@ final class GameStateParser implements GameStateParserInterface
         $height = (int)($data['height'] ?? 0);
         $width = (int)($data['width'] ?? 0);
         
-        $food = array_map(
+        $foodCoordinates = array_map(
             fn(array $food) => new Coordinate((int)($food['x'] ?? 0), (int)($food['y'] ?? 0)),
             $data['food'] ?? []
         );
+        $food = new CoordinateCollection(...$foodCoordinates);
         
-        $hazards = array_map(
+        $hazardCoordinates = array_map(
             fn(array $hazard) => new Coordinate((int)($hazard['x'] ?? 0), (int)($hazard['y'] ?? 0)),
             $data['hazards'] ?? []
         );
+        $hazards = new CoordinateCollection(...$hazardCoordinates);
         
-        $snakes = array_map(
+        $battlesnakes = array_map(
             fn(array $snake) => $this->parseSnake($snake),
             $data['snakes'] ?? []
         );
+        $snakes = new BattlesnakeCollection(...$battlesnakes);
 
         return new Board(
             $height,
@@ -94,10 +100,12 @@ final class GameStateParser implements GameStateParserInterface
      */
     private function parseSnake(array $data): Battlesnake
     {
-        $body = array_map(
+        $bodyCoordinates = array_map(
             fn(array $segment) => new Coordinate((int)($segment['x'] ?? 0), (int)($segment['y'] ?? 0)),
             $data['body'] ?? []
         );
+        
+        $body = new CoordinateCollection(...$bodyCoordinates);
 
         $head = null;
         if (isset($data['head']) && is_array($data['head'])) {
@@ -107,6 +115,13 @@ final class GameStateParser implements GameStateParserInterface
             );
         }
 
+        $customizationsData = $data['customizations'] ?? [];
+        $customizations = new Customizations(
+            $customizationsData['color'] ?? null,
+            $customizationsData['head'] ?? null,
+            $customizationsData['tail'] ?? null
+        );
+        
         return new Battlesnake(
             $data['id'] ?? '',
             $data['name'] ?? '',
@@ -117,7 +132,7 @@ final class GameStateParser implements GameStateParserInterface
             (int)($data['length'] ?? 0),
             $data['shout'] ?? '',
             $data['squad'] ?? '',
-            $data['customizations'] ?? []
+            $customizations
         );
     }
 
