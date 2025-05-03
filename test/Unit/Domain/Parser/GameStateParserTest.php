@@ -11,6 +11,18 @@ use BattleSnake\Domain\Game;
 use BattleSnake\Domain\GameState;
 use BattleSnake\Domain\Parser\GameStateParser;
 use BattleSnake\Tests\Unit\Domain\Parser\Fixture\AnotherTest;
+use BattleSnake\Tests\Unit\Domain\Parser\Fixture\FourPlayerLargeEnd;
+use BattleSnake\Tests\Unit\Domain\Parser\Fixture\FourPlayerLargeMove1;
+use BattleSnake\Tests\Unit\Domain\Parser\Fixture\FourPlayerLargeMove10;
+use BattleSnake\Tests\Unit\Domain\Parser\Fixture\FourPlayerLargeMove2;
+use BattleSnake\Tests\Unit\Domain\Parser\Fixture\FourPlayerLargeMove3;
+use BattleSnake\Tests\Unit\Domain\Parser\Fixture\FourPlayerLargeMove4;
+use BattleSnake\Tests\Unit\Domain\Parser\Fixture\FourPlayerLargeMove5;
+use BattleSnake\Tests\Unit\Domain\Parser\Fixture\FourPlayerLargeMove6;
+use BattleSnake\Tests\Unit\Domain\Parser\Fixture\FourPlayerLargeMove7;
+use BattleSnake\Tests\Unit\Domain\Parser\Fixture\FourPlayerLargeMove8;
+use BattleSnake\Tests\Unit\Domain\Parser\Fixture\FourPlayerLargeMove9;
+use BattleSnake\Tests\Unit\Domain\Parser\Fixture\FourPlayerLargeStart;
 use BattleSnake\Tests\Unit\Domain\Parser\Fixture\TwoPlayerStart;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -42,11 +54,29 @@ final class GameStateParserTest extends TestCase
 
     public static function provideJsonExamples(): \Generator
     {
-        $fixture = new TwoPlayerStart();
-        yield $fixture->getLabel() => [
-            'json' => $fixture->getJson(),
-            'expectedGameState' => $fixture->getState(),
+        $fixtures = [
+            TwoPlayerStart::class,
+            FourPlayerLargeStart::class,
+            FourPlayerLargeMove1::class,
+            FourPlayerLargeMove2::class,
+            FourPlayerLargeMove3::class,
+            FourPlayerLargeMove4::class,
+            FourPlayerLargeMove5::class,
+            FourPlayerLargeMove6::class,
+            FourPlayerLargeMove7::class,
+            FourPlayerLargeMove8::class,
+            FourPlayerLargeMove9::class,
+            FourPlayerLargeMove10::class,
+            FourPlayerLargeEnd::class,
         ];
+
+        foreach ($fixtures as $fixture) {
+            $fixture = new $fixture();
+            yield $fixture->getLabel() => [
+                'json' => $fixture->getJson(),
+                'expectedGameState' => $fixture->getState(),
+            ];
+        }
     }
 
     /**
