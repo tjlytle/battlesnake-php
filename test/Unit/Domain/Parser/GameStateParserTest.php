@@ -5,12 +5,8 @@ declare(strict_types=1);
 namespace BattleSnake\Tests\Unit\Domain\Parser;
 
 use BattleSnake\Domain\GameState;
-use BattleSnake\Domain\Parser\BattlesnakeParser;
-use BattleSnake\Domain\Parser\BoardParser;
-use BattleSnake\Domain\Parser\CoordinateFactory;
-use BattleSnake\Domain\Parser\GameParser;
 use BattleSnake\Domain\Parser\GameStateParser;
-use BattleSnake\Domain\Parser\RulesetSettingsParser;
+use BattleSnake\Domain\Parser\GameStateParserFactory;
 use BattleSnake\Tests\Unit\Domain\Parser\Fixture\FourPlayerRoyalEnd;
 use BattleSnake\Tests\Unit\Domain\Parser\Fixture\GameStateFixture;
 use BattleSnake\Tests\Unit\Domain\Parser\Fixture\FourPlayerRoyalMove5;
@@ -22,23 +18,11 @@ use PHPUnit\Framework\TestCase;
 
 final class GameStateParserTest extends TestCase
 {
-    /*
-     * TODO: refactor to use the examples, but also setup the value objects
-     *       directly and compare.
-     */
-
     private GameStateParser $parser;
 
     protected function setUp(): void
     {
-        $coordinateFactory = new CoordinateFactory();
-        $battlesnakeParser = new BattlesnakeParser($coordinateFactory);
-
-        $this->parser = new GameStateParser(
-            new GameParser(new RulesetSettingsParser()),
-            new BoardParser($battlesnakeParser, $coordinateFactory),
-            $battlesnakeParser
-        );
+        $this->parser = GameStateParserFactory::make();
     }
 
     #[Test]
