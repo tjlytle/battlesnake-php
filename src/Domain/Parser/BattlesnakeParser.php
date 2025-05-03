@@ -9,46 +9,37 @@ use BattleSnake\Domain\Coordinate;
 use BattleSnake\Domain\CoordinateCollection;
 use BattleSnake\Domain\Customizations;
 
-final class BattlesnakeParser
+final readonly class BattlesnakeParser
 {
-    /**
-     * @param array<string, mixed> $data
-     */
+    public function __construct(
+        private CoordinateFactory $coordinate_factory
+    ) {
+    }
+    
     public function parse(array $data): Battlesnake
     {
-        $bodyCoordinates = array_map(
-            fn(array $segment) => new Coordinate((int)($segment['x'] ?? 0), (int)($segment['y'] ?? 0)),
-            $data['body'] ?? []
-        );
-        
-        $body = new CoordinateCollection(...$bodyCoordinates);
-
         $head = null;
         if (isset($data['head']) && is_array($data['head'])) {
-            $head = new Coordinate(
-                (int)($data['head']['x'] ?? 0),
-                (int)($data['head']['y'] ?? 0)
-            );
+            $head = $this->coordinate_factory->createFromArray($data['head']);
         }
 
-        $customizationsData = $data['customizations'] ?? [];
-        $customizations = new Customizations(
-            $customizationsData['color'] ?? null,
-            $customizationsData['head'] ?? null,
-            $customizationsData['tail'] ?? null
-        );
-        
+        $customizations = $data['customizations'] ?? [];
+
         return new Battlesnake(
-            $data['id'] ?? '',
-            $data['name'] ?? '',
-            (int)($data['health'] ?? 0),
-            $body,
-            $data['latency'] ?? '',
-            $head,
-            (int)($data['length'] ?? 0),
-            $data['shout'] ?? '',
-            $data['squad'] ?? '',
-            $customizations
+            id: $data['id'] ?? '',
+            name: $data['name'] ?? '',
+            health: (int)($data['health'] ?? 0),
+            body: $this->coordinate_factory->createCollectionFromArray($data['body'] ?? []),
+            latency: $data['latency'] ?? '',
+            head: $head,
+            length: (int)($data['length'] ?? 0),
+            shout: $data['shout'] ?? '',
+            squad: $data['squad'] ?? '',
+            customizations: new Customizations(
+                $customizations['color'] ?? null,
+                $customizations['head'] ?? null,
+                $customizations['tail'] ?? null
+            )
         );
     }
 }

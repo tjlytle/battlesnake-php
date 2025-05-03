@@ -6,13 +6,13 @@ namespace BattleSnake\Domain\Parser;
 
 use BattleSnake\Domain\Board;
 use BattleSnake\Domain\BattlesnakeCollection;
-use BattleSnake\Domain\Coordinate;
 use BattleSnake\Domain\CoordinateCollection;
 
-final class BoardParser
+final readonly class BoardParser
 {
     public function __construct(
-        private BattlesnakeParser $snakeParser
+        private BattlesnakeParser $snake_parser,
+        private CoordinateFactory $coordinate_factory
     ) {
     }
 
@@ -21,32 +21,17 @@ final class BoardParser
      */
     public function parse(array $data): Board
     {
-        $height = (int)($data['height'] ?? 0);
-        $width = (int)($data['width'] ?? 0);
-        
-        $foodCoordinates = array_map(
-            fn(array $food) => new Coordinate((int)($food['x'] ?? 0), (int)($food['y'] ?? 0)),
-            $data['food'] ?? []
-        );
-        $food = new CoordinateCollection(...$foodCoordinates);
-        
-        $hazardCoordinates = array_map(
-            fn(array $hazard) => new Coordinate((int)($hazard['x'] ?? 0), (int)($hazard['y'] ?? 0)),
-            $data['hazards'] ?? []
-        );
-        $hazards = new CoordinateCollection(...$hazardCoordinates);
-        
         $battlesnakes = array_map(
-            fn(array $snake) => $this->snakeParser->parse($snake),
+            fn(array $snake) => $this->snake_parser->parse($snake),
             $data['snakes'] ?? []
         );
         $snakes = new BattlesnakeCollection(...$battlesnakes);
 
         return new Board(
-            $height,
-            $width,
-            $food,
-            $hazards,
+            (int)($data['height'] ?? 0),
+            (int)($data['width'] ?? 0),
+            $this->coordinate_factory->createCollectionFromArray($data['food'] ?? []),
+            $this->coordinate_factory->createCollectionFromArray($data['hazards'] ?? []),
             $snakes
         );
     }

@@ -9,7 +9,7 @@ use BattleSnake\Domain\BattlesnakeCollection;
 use BattleSnake\Domain\Board;
 use BattleSnake\Domain\GameState;
 
-final class GameStateParser implements GameStateParserInterface
+final class GameStateParser
 {
     public function __construct(
         private GameParser $gameParser,
@@ -25,16 +25,11 @@ final class GameStateParser implements GameStateParserInterface
      */
     public function parse(array $data): GameState
     {
-        $game = $this->gameParser->parse($data['game'] ?? []);
-        $turn = (int)($data['turn'] ?? 0);
-        $board = $this->boardParser->parse($data['board'] ?? []);
-        $you = $this->snakeParser->parse($data['you'] ?? []);
-
         return new GameState(
-            $game,
-            $turn,
-            $board,
-            $you
+            $this->gameParser->parse($data['game'] ?? []),
+            (int)($data['turn'] ?? 0),
+            $this->boardParser->parse($data['board'] ?? []),
+            $this->snakeParser->parse($data['you'] ?? [])
         );
     }
 }

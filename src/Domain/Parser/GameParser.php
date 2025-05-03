@@ -19,19 +19,18 @@ final class GameParser
      */
     public function parse(array $data): Game
     {
-        $rulesetData = $data['ruleset'] ?? [];
-        $ruleset = new Ruleset(
-            $rulesetData['name'] ?? '',
-            $rulesetData['version'] ?? '',
-            $this->rulesetSettingsParser->parse($rulesetData['settings'] ?? [])
-        );
+        $ruleset = $data['ruleset'] ?? [];
 
         return new Game(
-            $data['id'] ?? '',
-            $ruleset,
-            $data['map'] ?? '',
-            $data['source'] ?? '',
-            isset($data['timeout']) ? (int)$data['timeout'] : null
+            id: $data['id'] ?? '',
+            ruleset: new Ruleset(
+                $ruleset['name'] ?? '',
+                $ruleset['version'] ?? '',
+                $this->rulesetSettingsParser->parse($ruleset['settings'] ?? [])
+            ),
+            map: $data['map'] ?? '',
+            source: $data['source'] ?? '',
+            timeout: isset($data['timeout']) ? (int)$data['timeout'] : null
         );
     }
 }

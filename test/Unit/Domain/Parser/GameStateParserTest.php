@@ -7,6 +7,7 @@ namespace BattleSnake\Tests\Unit\Domain\Parser;
 use BattleSnake\Domain\GameState;
 use BattleSnake\Domain\Parser\BattlesnakeParser;
 use BattleSnake\Domain\Parser\BoardParser;
+use BattleSnake\Domain\Parser\CoordinateFactory;
 use BattleSnake\Domain\Parser\GameParser;
 use BattleSnake\Domain\Parser\GameStateParser;
 use BattleSnake\Domain\Parser\RulesetSettingsParser;
@@ -30,10 +31,13 @@ final class GameStateParserTest extends TestCase
 
     protected function setUp(): void
     {
+        $coordinateFactory = new CoordinateFactory();
+        $battlesnakeParser = new BattlesnakeParser($coordinateFactory);
+
         $this->parser = new GameStateParser(
             new GameParser(new RulesetSettingsParser()),
-            new BoardParser(new BattlesnakeParser()),
-            new BattlesnakeParser()
+            new BoardParser($battlesnakeParser, $coordinateFactory),
+            $battlesnakeParser
         );
     }
 
