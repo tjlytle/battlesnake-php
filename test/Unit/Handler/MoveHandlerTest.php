@@ -5,6 +5,8 @@ namespace BattleSnake\Tests\Unit\Handler;
 use BattleSnake\Handler\MoveHandler as SUT;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequestFactory;
+use League\OpenAPIValidation\PSR7\OperationAddress;
+use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -26,11 +28,8 @@ class MoveHandlerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('application/json', $response->getHeaderLine('Content-Type'));
 
-        $body = (string) $response->getBody();
-        $json = json_decode($body, true);
-        $this->assertIsArray($json);
-        $this->assertArrayHasKey('move', $json);
-        $this->assertContains($json['move'], ['up', 'down', 'left', 'right']);
+        $validator = new ValidatorBuilder()->fromYamlFile(__DIR__ . '/../../../open-api.yaml')->getResponseValidator();
+        $validator->validate(new OperationAddress('/move', 'post'), $response);
     }
 
     public static function provideGameStateExamples(): \Generator
