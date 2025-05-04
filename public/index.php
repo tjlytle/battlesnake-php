@@ -4,17 +4,6 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use BattleSnake\Core\Application;
-use Laminas\Diactoros\ResponseFactory;
-use Laminas\Diactoros\ServerRequestFactory;
-use Laminas\Diactoros\StreamFactory;
+use BattleSnake\ApplicationFactory;
 
-
-// TODO: pick a PSR-17 implementation
-$app = new Application(
-    response_factory: new ResponseFactory(),
-    server_request_factory: new ServerRequestFactory(),
-    stream_factory: new StreamFactory()
-);
-
-$app->run(); 
+new ApplicationFactory()->make()->run();
