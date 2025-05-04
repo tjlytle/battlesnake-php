@@ -10,7 +10,9 @@ use BattleSnake\Handler\MoveHandler;
 use BattleSnake\Handler\NotFoundHandler;
 use BattleSnake\Handler\StartHandler;
 use BattleSnake\Middleware\DispatchMiddleware;
+use BattleSnake\Middleware\JsonParser;
 use BattleSnake\Middleware\RequestLoggingMiddleware;
+use Laminas\Diactoros\ServerRequestFactory;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
@@ -46,7 +48,7 @@ class Application
 
         // Create the queue request handler
         $this->queue_handler = new QueueRequestHandler($fallback_handler);
-
+        $this->queue_handler->add(new JsonParser());
         $this->queue_handler->add(new RequestLoggingMiddleware());
         // Add the API dispatch middleware to the queue
         $this->queue_handler->add($api_dispatch);
@@ -54,20 +56,7 @@ class Application
 
     private function requestFromGlobals(): ServerRequestInterface
     {
-        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-        $uri = $_SERVER['REQUEST_URI'] ?? '/';
-        
-        $request = $this->server_request_factory->createServerRequest($method, $uri, $_SERVER);
-        
-        if ($method !== 'GET') {
-            $body = file_get_contents('php://input');
-            if ($body !== '') {
-                $stream = $this->stream_factory->createStream($body);
-                $request = $request->withBody($stream);
-            }
-        }
-        
-        return $request;
+        return ServerRequestFactory::fromGlobals();
     }
 
     private function sendResponse(ResponseInterface $response): void
@@ -98,6 +87,11 @@ class Application
         }
 
         echo $response->getBody()->getContents();
+    }
+
+    public function getQueueHandler(): QueueRequestHandler
+    {
+        return $this->queue_handler;
     }
 
     public function run(): void

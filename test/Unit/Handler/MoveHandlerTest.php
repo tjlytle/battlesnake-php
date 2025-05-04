@@ -2,8 +2,7 @@
 
 namespace BattleSnake\Tests\Unit\Handler;
 
-use BattleSnake\Handler\MoveHandler as SUT;
-use Laminas\Diactoros\ResponseFactory;
+use BattleSnake\ApplicationFactory;
 use Laminas\Diactoros\ServerRequestFactory;
 use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
@@ -18,12 +17,12 @@ class MoveHandlerTest extends TestCase
     public function handle_returns_valid_move(string $json): void
     {
         $factory = new ServerRequestFactory();
-        $request = $factory->createServerRequest('POST', '/not-checked');
+        $request = $factory->createServerRequest('POST', '/move');
         $request = $request->withHeader('Content-Type', 'application/json');
-        $request = $request->withParsedBody(json_decode($json, true));
+        $request->getBody()->write($json);
+        $request->getBody()->rewind();
 
-        $sut = new SUT(new ResponseFactory());
-        $response = $sut->handle($request);
+        $response  = new ApplicationFactory()->make()->getQueueHandler()->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('application/json', $response->getHeaderLine('Content-Type'));
