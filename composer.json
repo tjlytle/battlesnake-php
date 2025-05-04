@@ -27,6 +27,7 @@
         "phpstan/phpstan": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
         "phpspec/prophecy": "^1.22",
-        "phpspec/prophecy-phpunit": "^2.3"
+        "phpspec/prophecy-phpunit": "^2.3",
+        "behat/behat": "^3.21"
     }
 }
