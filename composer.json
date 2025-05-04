@@ -24,6 +24,8 @@
         "phpunit/phpunit": "^10.0",
         "squizlabs/php_codesniffer": "^3.6",
         "phpstan/phpstan": "^1.0",
-        "phpstan/phpstan-phpunit": "^1.0"
+        "phpstan/phpstan-phpunit": "^1.0",
+        "phpspec/prophecy": "^1.22",
+        "phpspec/prophecy-phpunit": "^2.3"
     }
 }

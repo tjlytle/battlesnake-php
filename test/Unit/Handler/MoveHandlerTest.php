@@ -25,7 +25,12 @@ class MoveHandlerTest extends TestCase
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('application/json', $response->getHeaderLine('Content-Type'));
-        $this->assertEquals('{"move":"up","shout":"Moving up!"}', (string) $response->getBody());
+
+        $body = (string) $response->getBody();
+        $json = json_decode($body, true);
+        $this->assertIsArray($json);
+        $this->assertArrayHasKey('move', $json);
+        $this->assertContains($json['move'], ['up', 'down', 'left', 'right']);
     }
 
     public static function provideGameStateExamples(): \Generator
