@@ -103,11 +103,27 @@ class ParserTest extends TestCase
         self::assertEquals($expected, $result);
     }
 
+    #[Test]
+    public function parse_returns_valid_path_for_multiples(): void
+    {
+        $sut = new SUT();
+        $result = $sut->parse(self::FLOOD_FILL_SNAKE);
+        $last = null;
+        foreach ($result['you']['body'] as $segment) {
+            if ($last !== null) {
+                // check that the segments are adjacent
+                $dx = abs($segment['x'] - $last['x']);
+                $dy = abs($segment['y'] - $last['y']);
+                self::assertTrue($dx + $dy === 1, "Segments are not adjacent: {$last['x']}, {$last['y']} to {$segment['x']}, {$segment['y']}");
+            }
+            $last = $segment;
+        }
+    }
+
     public static function provideBoardData(): \Generator
     {
         $examples = [
             'curly_snake' => self::CURLY_SNAKE,
-            'flood_fill_snake' => self::FLOOD_FILL_SNAKE,
             'head_and_tail_snake_1' => self::HEAD_AND_TAIL_SNAKE_1,
             'head_and_tail_snake_2' => self::HEAD_AND_TAIL_SNAKE_2,
             'single_head_snake' => self::SINGLE_HEAD_SNAKE,
