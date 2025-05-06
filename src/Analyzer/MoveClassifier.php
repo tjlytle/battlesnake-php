@@ -23,11 +23,6 @@ class MoveClassifier
             $position = $this->getAdjacentPosition($head, $direction);
             $classifications = [];
             
-            // Check for out of bounds or collision with snake
-            if ($this->isOutOfBounds($position, $board) || $this->isSnake($position, $board)) {
-                $classifications[] = Classification::END;
-            }
-            
             // Check for food
             if ($this->isFood($position, $board)) {
                 $classifications[] = Classification::FOOD;
@@ -47,7 +42,12 @@ class MoveClassifier
             if (empty($classifications)) {
                 $classifications[] = Classification::SAFE;
             }
-            
+
+            // Any end condition can't also be another condition, so overwrite the list
+            if ($this->isOutOfBounds($position, $board) || $this->isSnake($position, $board)) {
+                $classifications = [Classification::END];
+            }
+
             $moves[] = new Move($direction, new ClassificationCollection(...$classifications));
         }
         

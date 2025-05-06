@@ -3,6 +3,8 @@
 namespace BattleSnake\Tests\Unit\Analyzer;
 
 use BattleSnake\Analyzer\Move;
+use BattleSnake\Analyzer\Move\Classification;
+use BattleSnake\Analyzer\Move\ClassificationCollection;
 use BattleSnake\Analyzer\MoveClassifier as SUT;
 use BattleSnake\Analyzer\MoveCollection;
 use BattleSnake\Domain\Direction;
@@ -47,11 +49,85 @@ class MoveClassifierTest extends TestCase
         yield [
             $state,
             new MoveCollection(
-                new Move(Direction::UP, new Move\ClassificationCollection(Move\Classification::END)),
-                new Move(Direction::LEFT, new Move\ClassificationCollection(Move\Classification::END)),
-                new Move(Direction::DOWN, new Move\ClassificationCollection(Move\Classification::HAZARD)),
-                new Move(Direction::RIGHT, new Move\ClassificationCollection(Move\Classification::FOOD, Move\Classification::DANGER)),
+                new Move(Direction::UP, new ClassificationCollection(Classification::END)),
+                new Move(Direction::LEFT, new ClassificationCollection(Classification::END)),
+                new Move(Direction::DOWN, new ClassificationCollection(Classification::HAZARD)),
+                new Move(Direction::RIGHT, new ClassificationCollection(Classification::FOOD, Classification::DANGER)),
             )
         ];
+
+        $state = <<<EOD
+            -----------
+            -----------
+            -----/-----
+            -----A0----
+            -----bC----
+            -----bd----
+            -----Bd----
+            ------D----
+            -----------
+            -----------
+            -----------
+            EOD;
+
+        yield [
+            $state,
+            new MoveCollection(
+                new Move(Direction::UP, new ClassificationCollection(Classification::HAZARD)),
+                new Move(Direction::LEFT, new ClassificationCollection(Classification::SAFE)),
+                new Move(Direction::DOWN, new ClassificationCollection(Classification::END)),
+                new Move(Direction::RIGHT, new ClassificationCollection(Classification::FOOD, Classification::DANGER)),
+            )
+        ];
+
+
+        $state = <<<EOD
+            -----------
+            -----------
+            -----------
+            -----------
+            -BbbbA-----
+            -----------
+            -----------
+            -------CdD-
+            -----------
+            -----------
+            -----------
+            EOD;
+
+        yield [
+            $state,
+            new MoveCollection(
+                new Move(Direction::UP, new ClassificationCollection(Classification::SAFE)),
+                new Move(Direction::LEFT, new ClassificationCollection(Classification::END)),
+                new Move(Direction::DOWN, new ClassificationCollection(Classification::SAFE)),
+                new Move(Direction::RIGHT, new ClassificationCollection(Classification::SAFE)),
+            )
+        ];
+
+        $state = <<<EOD
+            -----------
+            -----E-----
+            -----------
+            -----------
+            ----A------
+            -----------
+            -----------
+            ----C------
+            -----------
+            -----------
+            -----------
+            EOD;
+
+        yield [
+            $state,
+            new MoveCollection(
+                new Move(Direction::UP, new ClassificationCollection(Classification::SAFE)),
+                new Move(Direction::LEFT, new ClassificationCollection(Classification::SAFE)),
+                new Move(Direction::DOWN, new ClassificationCollection(Classification::SAFE)),
+                new Move(Direction::RIGHT, new ClassificationCollection(Classification::SAFE)),
+            )
+        ];
+
     }
 }
