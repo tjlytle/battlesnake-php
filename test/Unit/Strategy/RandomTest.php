@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 class RandomTest extends TestCase
 {
-
+    //TODO: use this as an example of a test that mocks too much
     #[Test]
     #[DataProvider('provideGameStateExamples')]
     public function invoke_returns_random_safe_direction(GameState $state, Direction ...$safe_direction): void
