@@ -18,6 +18,9 @@ readonly class MoveCollection implements IteratorAggregate
      */
     public function __construct(Move ...$moves)
     {
+        usort($moves, // Use the enum's name for comparison
+        fn(Move $a, Move $b) => $a->direction->name <=> $b->direction->name);
+
         $this->moves = $moves;
     }
 

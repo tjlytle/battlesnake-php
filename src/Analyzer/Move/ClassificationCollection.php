@@ -18,6 +18,9 @@ readonly class ClassificationCollection implements IteratorAggregate
      */
     public function __construct(Classification ...$classifications)
     {
+        usort($classifications, // Use the enum's name for comparison
+        fn(Classification $a, Classification $b) => $a->name <=> $b->name);
+
         $this->classifications = $classifications;
     }
 
