@@ -6,6 +6,7 @@ use BattleSnake\Domain\GameState;
 use BattleSnake\Domain\Parser\GameStateParser;
 use BattleSnake\Domain\Parser\GameStateParserFactory;
 use BattleSnake\Eventsource\Event;
+use BattleSnake\Eventsource\Payload;
 use BattleSnake\Eventsource\Repository as SUT;
 use BattleSnake\Tests\SnekSpec\Parser;
 use PHPUnit\Framework\Attributes\Test;
@@ -62,18 +63,21 @@ class RepositoryTest extends TestCase
 
         // passed to persist with an aggregate id and a version
         $aggregate_id = Uuid::uuid7();
-        $this->sut->persist($aggregate_id, 1, $event1);
-        $this->sut->persist($aggregate_id, 2, $event2);
-        $this->sut->persist($aggregate_id, 3, $event2);
+        $now = new \DateTimeImmutable();
+        $this->sut->persist(
+            new Payload($aggregate_id, 1,  $event1, $now),
+            new Payload($aggregate_id, 2,  $event2, $now),
+            new Payload($aggregate_id, 3,  $event3, $now),
+        );
 
         // puts rows in database
 
         // and are returned when getting events
         $events = $this->sut->get($aggregate_id);
         self::assertCount(3, $events);
-        self::assertEquals($event1, $events[0]);
-        self::assertEquals($event2, $events[1]);
-        self::assertEquals($event3, $events[2]);
+        self::assertEquals($event1->event, $events[0]);
+        self::assertEquals($event2->event, $events[1]);
+        self::assertEquals($event3->event, $events[2]);
     }
 
     #[Test]

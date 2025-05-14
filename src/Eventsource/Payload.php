@@ -8,7 +8,8 @@ readonly class Payload
 {
     public function __construct(
         public UuidInterface $uuid,
-        public \DateTimeImmutable $timestamp,
+        public int $version,
         public Event $event,
+        public \DateTimeImmutable $timestamp,
     ){}
 }
