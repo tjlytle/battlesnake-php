@@ -84,9 +84,9 @@ class RepositoryTest extends TestCase
         // and are returned when getting events
         $events = $this->sut->get($aggregate_id);
         self::assertCount(3, $events);
-        self::assertEquals($event1->event, $events[0]);
-        self::assertEquals($event2->event, $events[1]);
-        self::assertEquals($event3->event, $events[2]);
+        self::assertEquals($event1, $events[0]->event);
+        self::assertEquals($event2, $events[1]->event);
+        self::assertEquals($event3, $events[2]->event);
     }
 
     #[Test]
