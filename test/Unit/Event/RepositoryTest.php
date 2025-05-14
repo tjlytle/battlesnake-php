@@ -27,7 +27,7 @@ class RepositoryTest extends TestCase
         $this->state_parser = GameStateParserFactory::make();
         $this->test_parser = new Parser();
 
-        $this->sut = new SUT();
+        $this->sut = new SUT($this->getApplication()->connection);
     }
 
     #[Test]
