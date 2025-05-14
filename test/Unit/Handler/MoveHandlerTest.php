@@ -3,6 +3,7 @@
 namespace BattleSnake\Tests\Unit\Handler;
 
 use BattleSnake\ApplicationFactory;
+use BattleSnake\Tests\Unit\ApplicationProvider;
 use Laminas\Diactoros\ServerRequestFactory;
 use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
@@ -12,6 +13,8 @@ use PHPUnit\Framework\TestCase;
 
 class MoveHandlerTest extends TestCase
 {
+    use ApplicationProvider;
+
     #[Test]
     #[DataProvider('provideGameStateExamples')]
     public function handle_returns_valid_move(string $json): void
@@ -22,7 +25,7 @@ class MoveHandlerTest extends TestCase
         $request->getBody()->write($json);
         $request->getBody()->rewind();
 
-        $response  = new ApplicationFactory()->make()->getQueueHandler()->handle($request);
+        $response  = $this->getApplication()->getQueueHandler()->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('application/json', $response->getHeaderLine('Content-Type'));

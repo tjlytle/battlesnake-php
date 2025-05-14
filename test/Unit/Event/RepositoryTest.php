@@ -5,7 +5,6 @@ namespace BattleSnake\Tests\Unit\Event;
 use BattleSnake\Domain\GameState;
 use BattleSnake\Domain\Parser\GameStateParser;
 use BattleSnake\Domain\Parser\GameStateParserFactory;
-use BattleSnake\Eventsource\Event;
 use BattleSnake\Eventsource\Payload;
 use BattleSnake\Eventsource\Repository as SUT;
 use BattleSnake\Eventsource\VersionCollision;

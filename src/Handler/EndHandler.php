@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BattleSnake\Handler;
 
 use BattleSnake\Domain\Parser\GameStateParserFactory;
-use BattleSnake\Event\Start;
+use BattleSnake\Event\End;
 use BattleSnake\Eventsource\Payload;
 use BattleSnake\Eventsource\Repository;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -34,7 +34,7 @@ class EndHandler extends AbstractHandler
         $this->repository->persist(new Payload(
             $game_id,
             count($past_events),
-            new Start($state),
+            new End($state),
             new \DateTimeImmutable(),
         ));
 

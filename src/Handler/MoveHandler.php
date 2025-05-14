@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace BattleSnake\Handler;
 
 use BattleSnake\Domain\Parser\GameStateParserFactory;
-use BattleSnake\Event\Start;
+use BattleSnake\Event\Turn;
 use BattleSnake\Eventsource\Payload;
 use BattleSnake\Eventsource\Repository;
 use BattleSnake\Strategy\Random;
@@ -35,7 +35,7 @@ class MoveHandler extends AbstractHandler
         $this->repository->persist(new Payload(
             $game_id,
             count($past_events),
-            new Start($state),
+            new Turn($state),
             new \DateTimeImmutable(),
         ));
 
