@@ -1,0 +1,103 @@
+<?php
+
+namespace BattleSnake\Tests\Unit\Event;
+
+use BattleSnake\Domain\GameState;
+use BattleSnake\Domain\Parser\GameStateParser;
+use BattleSnake\Domain\Parser\GameStateParserFactory;
+use BattleSnake\Eventsource\Event;
+use BattleSnake\Eventsource\Repository as SUT;
+use BattleSnake\Tests\SnekSpec\Parser;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\Uuid;
+use stdClass;
+
+class RepositoryTest extends TestCase
+{
+    private GameStateParser $state_parser;
+    private Parser $test_parser;
+
+    protected function setUp(): void
+    {
+        $this->state_parser = GameStateParserFactory::make();
+        $this->test_parser = new Parser();
+
+        $this->sut = new SUT();
+    }
+
+    #[Test]
+    public function persist_saves_ordered_event(Event ...$events): void
+    {
+        // given a set of events
+        $event1 = new EventFixture(
+            'event1',
+            1,
+            1.0,
+            true,
+            ['array'],
+            new \DateTimeImmutable(),
+            $this->getGame(),
+        );
+
+        $event2 = new EventFixture(
+            'event2',
+            2,
+            1.2,
+            false,
+            [1, 'red' , new stdClass()],
+            new \DateTimeImmutable(),
+            $this->getGame(),
+        );
+
+        $event3 = new EventFixture(
+            'event3',
+            3,
+            3.4,
+            false,
+            [],
+            new \DateTimeImmutable(),
+            $this->getGame(),
+        );
+
+        // passed to persist with an aggregate id and a version
+        $this->sut->persist();
+
+
+        // puts rows in database
+
+        // and are returned when getting events
+    }
+
+    #[Test]
+    public function persist_rejects_ordered_collisions(): void
+    {
+        // given a set of events
+
+        // passed to persist with an aggregate id and a version
+
+        // throws an exception when the version is already used
+    }
+
+    private function getGame(): GameState
+    {
+        $state = <<<EOD
+            -----------
+            -----------
+            -----------
+            bbbB-------
+            b----------
+            A0Cdd------
+            /---d------
+            -----------
+            -----------
+            -----------
+            -----------
+            EOD;
+
+        return $this->state_parser->parse(
+            $this->test_parser->parse($state)
+        );
+    }
+
+}
