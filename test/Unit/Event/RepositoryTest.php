@@ -11,6 +11,7 @@ use BattleSnake\Eventsource\Repository as SUT;
 use BattleSnake\Eventsource\VersionCollision;
 use BattleSnake\Tests\SnekSpec\Parser;
 use BattleSnake\Tests\Unit\ApplicationProvider;
+use Crell\Serde\SerdeCommon;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
@@ -28,7 +29,10 @@ class RepositoryTest extends TestCase
         $this->state_parser = GameStateParserFactory::make();
         $this->test_parser = new Parser();
 
-        $this->sut = new SUT($this->getApplication()->connection);
+        $this->sut = new SUT(
+            $this->getApplication()->connection,
+            new SerdeCommon()
+        );
     }
 
     #[Test]
@@ -41,7 +45,7 @@ class RepositoryTest extends TestCase
             1.0,
             true,
             ['array'],
-            new \DateTimeImmutable(),
+            new \DateTimeImmutable('2025-05-14T17:24:47'),
             $this->getGame(),
         );
 
@@ -50,8 +54,8 @@ class RepositoryTest extends TestCase
             2,
             1.2,
             false,
-            [1, 'red' , new stdClass()],
-            new \DateTimeImmutable(),
+            [1, 'red'],
+            new \DateTimeImmutable('2025-05-14T17:24:47'),
             $this->getGame(),
         );
 
@@ -61,7 +65,7 @@ class RepositoryTest extends TestCase
             3.4,
             false,
             [],
-            new \DateTimeImmutable(),
+            new \DateTimeImmutable('2025-05-14T17:24:47'),
             $this->getGame(),
         );
 

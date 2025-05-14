@@ -2,6 +2,7 @@
 
 namespace BattleSnake\Eventsource;
 
+use Crell\Serde\Serde;
 use Doctrine\DBAL\Connection;
 use Ramsey\Uuid\Uuid;
 
@@ -9,6 +10,7 @@ class Repository
 {
     public function __construct(
         private readonly Connection $connection,
+        private readonly Serde $serde,
     ) {
     }
 
@@ -22,7 +24,7 @@ class Repository
                     'aggregate_id' => $item->uuid->toString(),
                     'version' => $item->version,
                     'date' => $item->timestamp->format('Y-m-d H:i:s'),
-                    'event' => serialize($item->event)
+                    'event' => $this->serde->serialize(new EventWrapper($item->event), 'json')
                 ]);
             }
 
@@ -53,7 +55,7 @@ class Repository
             $payloads[] = new Payload(
                 Uuid::fromString($row['aggregate_id']),
                 $row['version'],
-                unserialize($row['event']),
+                $this->serde->deserialize($row['event'], 'json', EventWrapper::class)->event,
                 new \DateTimeImmutable($row['date'])
             );
         }

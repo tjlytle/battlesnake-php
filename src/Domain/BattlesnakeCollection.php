@@ -2,6 +2,7 @@
 
 namespace BattleSnake\Domain;
 
+use Crell\Serde\Attributes\SequenceField;
 use IteratorAggregate;
 use Traversable;
 use ArrayIterator;
@@ -14,7 +15,9 @@ readonly class BattlesnakeCollection implements IteratorAggregate
     /**
      * @var array<Battlesnake>
      */
-    public array $battlesnakes; 
+    #[SequenceField(arrayType: Battlesnake::class)]
+
+    public array $battlesnakes;
 
     public function __construct(Battlesnake ...$battlesnake)
     {

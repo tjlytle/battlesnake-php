@@ -2,6 +2,7 @@
 
 namespace BattleSnake\Domain;
 
+use Crell\Serde\Attributes\SequenceField;
 use IteratorAggregate;
 use Traversable;
 use ArrayIterator;
@@ -14,6 +15,7 @@ readonly class CoordinateCollection implements IteratorAggregate
     /**
      * @var array<Coordinate>
      */
+    #[SequenceField(arrayType: Coordinate::class)]
     public array $coordinates;
 
     public function __construct(Coordinate ...$coordinate)
