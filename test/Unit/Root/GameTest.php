@@ -4,6 +4,9 @@ namespace BattleSnake\Tests\Unit\Root;
 
 use BattleSnake\Domain\GameState;
 use BattleSnake\Domain\Parser\GameStateParserFactory;
+use BattleSnake\Event\End;
+use BattleSnake\Event\Start;
+use BattleSnake\Event\Turn;
 use BattleSnake\Eventsource\Event;
 use BattleSnake\Root\Game as SUT;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -39,18 +42,18 @@ class GameTest extends TestCase
     public static function provideEventsAndAssertion(): \Generator
     {
         $events = [
-            new \BattleSnake\Event\Start(self::getJsonData('four-player-large-start')),
-            new \BattleSnake\Event\Turn(self::getJsonData('four-player-large-move1')),
-            new \BattleSnake\Event\Turn(self::getJsonData('four-player-large-move2')),
-            new \BattleSnake\Event\Turn(self::getJsonData('four-player-large-move3')),
-            new \BattleSnake\Event\Turn(self::getJsonData('four-player-large-move4')),
-            new \BattleSnake\Event\Turn(self::getJsonData('four-player-large-move5')),
-            new \BattleSnake\Event\Turn(self::getJsonData('four-player-large-move6')),
-            new \BattleSnake\Event\Turn(self::getJsonData('four-player-large-move7')),
-            new \BattleSnake\Event\Turn(self::getJsonData('four-player-large-move8')),
-            new \BattleSnake\Event\Turn(self::getJsonData('four-player-large-move9')),
-            new \BattleSnake\Event\Turn(self::getJsonData('four-player-large-move10')),
-            new \BattleSnake\Event\End(self::getJsonData('four-player-large-end')),
+            new Start(self::getJsonData('four-player-large-start')),
+            new Turn(self::getJsonData('four-player-large-move1')),
+            new Turn(self::getJsonData('four-player-large-move2')),
+            new Turn(self::getJsonData('four-player-large-move3')),
+            new Turn(self::getJsonData('four-player-large-move4')),
+            new Turn(self::getJsonData('four-player-large-move5')),
+            new Turn(self::getJsonData('four-player-large-move6')),
+            new Turn(self::getJsonData('four-player-large-move7')),
+            new Turn(self::getJsonData('four-player-large-move8')),
+            new Turn(self::getJsonData('four-player-large-move9')),
+            new Turn(self::getJsonData('four-player-large-move10')),
+            new End(self::getJsonData('four-player-large-end')),
         ];
 
         yield [
