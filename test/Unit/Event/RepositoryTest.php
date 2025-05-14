@@ -61,12 +61,19 @@ class RepositoryTest extends TestCase
         );
 
         // passed to persist with an aggregate id and a version
-        $this->sut->persist();
-
+        $aggregate_id = Uuid::uuid7();
+        $this->sut->persist($aggregate_id, 1, $event1);
+        $this->sut->persist($aggregate_id, 2, $event2);
+        $this->sut->persist($aggregate_id, 3, $event2);
 
         // puts rows in database
 
         // and are returned when getting events
+        $events = $this->sut->get($aggregate_id);
+        self::assertCount(3, $events);
+        self::assertEquals($event1, $events[0]);
+        self::assertEquals($event2, $events[1]);
+        self::assertEquals($event3, $events[2]);
     }
 
     #[Test]
