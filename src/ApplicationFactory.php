@@ -11,7 +11,7 @@ class ApplicationFactory
     {
         return new Application(
             response_factory: new ResponseFactory(),
-            config: require_once(__DIR__ . '/../config/config.php'),
+            config: require(__DIR__ . '/../config/config.php'),
         );
     }
 }

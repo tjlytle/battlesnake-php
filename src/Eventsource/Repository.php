@@ -29,6 +29,15 @@ class Repository
             $this->connection->commit();
         } catch (\Exception $e) {
             $this->connection->rollBack();
+
+            // Check if this is a duplicate key/integrity constraint violation
+            $errorMessage = $e->getMessage();
+            if (strpos($errorMessage, 'Duplicate entry') !== false || 
+                strpos($errorMessage, 'UNIQUE constraint failed') !== false ||
+                strpos($errorMessage, 'integrity constraint violation') !== false) {
+                throw new VersionCollision('Version collision detected', 0, $e);
+            }
+
             throw $e;
         }
     }

@@ -8,6 +8,7 @@ use BattleSnake\Domain\Parser\GameStateParserFactory;
 use BattleSnake\Eventsource\Event;
 use BattleSnake\Eventsource\Payload;
 use BattleSnake\Eventsource\Repository as SUT;
+use BattleSnake\Eventsource\VersionCollision;
 use BattleSnake\Tests\SnekSpec\Parser;
 use BattleSnake\Tests\Unit\ApplicationProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -93,10 +94,51 @@ class RepositoryTest extends TestCase
     public function persist_rejects_ordered_collisions(): void
     {
         // given a set of events
+        $event1 = new EventFixture(
+            'event1',
+            1,
+            1.0,
+            true,
+            ['array'],
+            new \DateTimeImmutable(),
+            $this->getGame(),
+        );
 
-        // passed to persist with an aggregate id and a version
+        $event2 = new EventFixture(
+            'event2',
+            2,
+            1.2,
+            false,
+            [1, 'red' , new stdClass()],
+            new \DateTimeImmutable(),
+            $this->getGame(),
+        );
 
-        // throws an exception when the version is already used
+        $event2b = new EventFixture(
+            'event2-rejected',
+            3,
+            3.4,
+            false,
+            [],
+            new \DateTimeImmutable(),
+            $this->getGame(),
+        );
+
+        $aggregate_id = Uuid::uuid7();
+        $now = new \DateTimeImmutable();
+
+        try {
+            $this->sut->persist(
+                new Payload($aggregate_id, 1,  $event1, $now),
+                new Payload($aggregate_id, 2,  $event2, $now),
+                new Payload($aggregate_id, 2,  $event2b, $now),
+            );
+        } catch (VersionCollision $e) {
+            $this->expectNotToPerformAssertions();
+            return;
+        }
+
+        $this->fail('Expected exception not thrown');
     }
 
     private function getGame(): GameState
