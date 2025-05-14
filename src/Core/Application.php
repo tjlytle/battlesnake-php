@@ -40,7 +40,6 @@ class Application
     {
         $dsn_parser = new DsnParser(['mysql' => 'pdo_mysql']);
         $connection_params = $dsn_parser->parse($this->config->dsn);
-var_dump($connection_params);
         $this->connection = DriverManager::getConnection($connection_params);
     }
 
