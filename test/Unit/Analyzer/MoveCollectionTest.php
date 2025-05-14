@@ -23,7 +23,7 @@ final class MoveCollectionTest extends TestCase
         $collection = new MoveCollection($move1, $move2);
 
         self::assertCount(2, $collection);
-        self::assertSame([$move1, $move2], $collection->toArray());
+        self::assertSame([$move2, $move1], $collection->toArray());
         self::assertFalse($collection->isEmpty());
     }
 
