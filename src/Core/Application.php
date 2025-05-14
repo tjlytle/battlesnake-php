@@ -12,6 +12,9 @@ use BattleSnake\Handler\StartHandler;
 use BattleSnake\Middleware\DispatchMiddleware;
 use BattleSnake\Middleware\JsonParser;
 use BattleSnake\Middleware\RequestLoggingMiddleware;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Tools\DsnParser;
 use Laminas\Diactoros\ServerRequestFactory;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -21,15 +24,24 @@ use Psr\Http\Message\StreamFactoryInterface;
 
 class Application
 {
+    public readonly Connection $connection;
     private QueueRequestHandler $queue_handler;
 
     public function __construct(
         private readonly ResponseFactoryInterface $response_factory,
-        private readonly ServerRequestFactoryInterface $server_request_factory,
-        private readonly StreamFactoryInterface $stream_factory,
+        public readonly Config $config,
     )
     {
         $this->setupHandlers();
+        $this->setupDatabase();
+    }
+
+    private function setupDatabase()
+    {
+        $dsn_parser = new DsnParser(['mysql' => 'pdo_mysql']);
+        $connection_params = $dsn_parser->parse($this->config->dsn);
+var_dump($connection_params);
+        $this->connection = DriverManager::getConnection($connection_params);
     }
 
     private function setupHandlers(): void

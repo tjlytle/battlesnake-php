@@ -9,6 +9,7 @@ use BattleSnake\Eventsource\Event;
 use BattleSnake\Eventsource\Payload;
 use BattleSnake\Eventsource\Repository as SUT;
 use BattleSnake\Tests\SnekSpec\Parser;
+use BattleSnake\Tests\Unit\ApplicationProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
@@ -16,6 +17,8 @@ use stdClass;
 
 class RepositoryTest extends TestCase
 {
+    use ApplicationProvider;
+
     private GameStateParser $state_parser;
     private Parser $test_parser;
 
@@ -71,6 +74,12 @@ class RepositoryTest extends TestCase
         );
 
         // puts rows in database
+        $app = $this->getApplication();
+        $connection = $app->connection;
+
+        $stmt = $connection->prepare('SELECT * FROM game_events WHERE aggregate_id = :aggregate_id');
+        $stmt->bindValue(':aggregate_id', $aggregate_id);
+        self::assertSame(3, $stmt->executeQuery()->rowCount());
 
         // and are returned when getting events
         $events = $this->sut->get($aggregate_id);
