@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BattleSnake\Core;
 
+use BattleSnake\Eventsource\Repository;
 use BattleSnake\Handler\EndHandler;
 use BattleSnake\Handler\InfoHandler;
 use BattleSnake\Handler\MoveHandler;
@@ -12,6 +13,7 @@ use BattleSnake\Handler\StartHandler;
 use BattleSnake\Middleware\DispatchMiddleware;
 use BattleSnake\Middleware\JsonParser;
 use BattleSnake\Middleware\RequestLoggingMiddleware;
+use Crell\Serde\SerdeCommon;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Tools\DsnParser;
@@ -32,8 +34,8 @@ class Application
         public readonly Config $config,
     )
     {
-        $this->setupHandlers();
         $this->setupDatabase();
+        $this->setupHandlers();
     }
 
     private function setupDatabase()
@@ -48,11 +50,35 @@ class Application
         // Create the API dispatch middleware
         $api_dispatch = new DispatchMiddleware();
 
+        $serde = new SerdeCommon();
+        $repository = new Repository(
+            $this->connection,
+            $serde,
+        );
+
         // Add routes
         $api_dispatch->addRoute('/', new InfoHandler($this->response_factory));
-        $api_dispatch->addRoute('/start', new StartHandler($this->response_factory));
-        $api_dispatch->addRoute('/move', new MoveHandler($this->response_factory));
-        $api_dispatch->addRoute('/end', new EndHandler($this->response_factory));
+        $api_dispatch->addRoute(
+            '/start',
+            new StartHandler(
+                $this->response_factory,
+                $repository,
+            ),
+        );
+        $api_dispatch->addRoute(
+            '/move',
+            new MoveHandler(
+                $this->response_factory,
+                $repository,
+            ),
+        );
+        $api_dispatch->addRoute(
+            '/end',
+            new EndHandler(
+                $this->response_factory,
+                $repository
+            ),
+        );
 
         // Create the fallback handler
         $fallback_handler = new NotFoundHandler($this->response_factory);

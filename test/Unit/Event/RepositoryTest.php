@@ -36,7 +36,7 @@ class RepositoryTest extends TestCase
     }
 
     #[Test]
-    public function persist_saves_ordered_event(Event ...$events): void
+    public function persist_saves_ordered_event(): void
     {
         // given a set of events
         $event1 = new EventFixture(

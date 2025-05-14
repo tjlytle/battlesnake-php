@@ -20,7 +20,7 @@ class OfficialExample extends JsonFixture
     public function getGame(): Game
     {
         return new Game(
-            id: 'totally-unique-game-id',
+            id: '61a74d9c-81d8-4856-924f-9ee5b03cf246',
             ruleset: $this->getRuleset(),
             map: 'standard',
             source: 'league',
