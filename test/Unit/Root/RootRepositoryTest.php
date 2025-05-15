@@ -22,7 +22,7 @@ class RootRepositoryTest extends TestCase
     use ProphecyTrait;
 
     /**
-     * @var ObjectProphecy//<EventRepository>
+     * @var ObjectProphecy<EventRepository>
      */
     private ObjectProphecy $event_repository;
     private SUT $sut;
@@ -62,8 +62,6 @@ class RootRepositoryTest extends TestCase
 
         $game->addEvent($events[5], $events[6], $events[7]);
 
-        $this->sut->persist($game);
-
         $this->event_repository->persist(Argument::cetera())
             ->will(function($args) use ($events, $aggregate_id) {
                 TestCase::assertCount(3, $args);
@@ -73,16 +71,18 @@ class RootRepositoryTest extends TestCase
                 foreach ($args as $payload) {
                     $version++;
                     TestCase::assertInstanceOf(Payload::class, $payload);
-                    TestCase::assertSame($version, $payload->getVersion());
+                    TestCase::assertSame($version, $payload->version);
                     TestCase::assertSame($events[$version - 1], $payload->event);
-                    TestCase::assertSame($aggregate_id, $payload->getAggregateId());
+                    TestCase::assertSame($aggregate_id, $payload->uuid);
                 }
 
             })->shouldBeCalled();
+
+        $this->sut->persist($game);
     }
 
     #[Test]
-    public function retrieve_loads_all_eventS_and_returns_aggregate_root()
+    public function retrieve_loads_all_events_and_returns_aggregate_root()
     {
         $events = [
             new Start(self::getJsonData('four-player-large-start')),

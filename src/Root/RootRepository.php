@@ -20,11 +20,10 @@ class RootRepository
 
         $payloads = [];
 
-        $version = $root->getVersion();
+        $version = $root->getVersion() - count($events);
         foreach ($events as $event) {
             $payloads[] = new Payload($root->getAggregateRootId(), ++$version, $event, new DateTimeImmutable());
         }
-
         $this->event_repository->persist(...$payloads);
     }
 
