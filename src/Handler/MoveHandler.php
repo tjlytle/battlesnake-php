@@ -6,8 +6,7 @@ namespace BattleSnake\Handler;
 
 use BattleSnake\Domain\Parser\GameStateParserFactory;
 use BattleSnake\Event\Turn;
-use BattleSnake\Eventsource\Payload;
-use BattleSnake\Eventsource\EventRepository;
+use BattleSnake\Root\RootRepository;
 use BattleSnake\Strategy\Random;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -18,7 +17,7 @@ class MoveHandler extends AbstractHandler
 {
     public function __construct(
         protected readonly ResponseFactoryInterface $response_factory,
-        protected readonly EventRepository $repository,
+        protected readonly RootRepository $repository,
     )
     {
     }
@@ -30,14 +29,10 @@ class MoveHandler extends AbstractHandler
 
         $game_id = Uuid::fromString($state->game->id);
 
-        $past_events = $this->repository->get($game_id);
+        $root = $this->repository->retrieve($game_id);
+        $root->addEvent(new Turn($state));
+        $this->repository->persist($root);
 
-        $this->repository->persist(new Payload(
-            $game_id,
-            count($past_events),
-            new Turn($state),
-            new \DateTimeImmutable(),
-        ));
 
         $strategy = new Random();
 

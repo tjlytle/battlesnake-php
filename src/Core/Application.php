@@ -12,6 +12,7 @@ use BattleSnake\Handler\NotFoundHandler;
 use BattleSnake\Handler\StartHandler;
 use BattleSnake\Middleware\DispatchMiddleware;
 use BattleSnake\Middleware\JsonParser;
+use BattleSnake\Root\RootRepository;
 use Crell\Serde\SerdeCommon;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -48,9 +49,13 @@ class Application
         $api_dispatch = new DispatchMiddleware();
 
         $serde = new SerdeCommon();
-        $repository = new EventRepository(
+        $event_repository = new EventRepository(
             $this->connection,
             $serde,
+        );
+
+        $root_repository = new RootRepository(
+            $event_repository,
         );
 
         // Add routes
@@ -59,21 +64,21 @@ class Application
             '/start',
             new StartHandler(
                 $this->response_factory,
-                $repository,
+                $root_repository,
             ),
         );
         $api_dispatch->addRoute(
             '/move',
             new MoveHandler(
                 $this->response_factory,
-                $repository,
+                $root_repository,
             ),
         );
         $api_dispatch->addRoute(
             '/end',
             new EndHandler(
                 $this->response_factory,
-                $repository
+                $root_repository
             ),
         );
 

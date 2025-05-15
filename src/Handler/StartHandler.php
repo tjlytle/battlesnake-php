@@ -6,8 +6,7 @@ namespace BattleSnake\Handler;
 
 use BattleSnake\Domain\Parser\GameStateParserFactory;
 use BattleSnake\Event\Start;
-use BattleSnake\Eventsource\Payload;
-use BattleSnake\Eventsource\EventRepository;
+use BattleSnake\Root\RootRepository;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -17,7 +16,7 @@ class StartHandler extends AbstractHandler
 {
     public function __construct(
         protected readonly ResponseFactoryInterface $response_factory,
-        protected readonly EventRepository $repository,
+        protected readonly RootRepository $repository,
     )
     {
     }
@@ -29,14 +28,9 @@ class StartHandler extends AbstractHandler
 
         $game_id = Uuid::fromString($state->game->id);
 
-        $past_events = $this->repository->get($game_id);
-
-        $this->repository->persist(new Payload(
-            $game_id,
-            count($past_events),
-            new Start($state),
-            new \DateTimeImmutable(),
-        ));
+        $root = $this->repository->retrieve($game_id);
+        $root->addEvent(new Start($state));
+        $this->repository->persist($root);
 
         return $this->response_factory->createResponse(204);
     }
