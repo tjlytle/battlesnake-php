@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BattleSnake\Core;
 
-use BattleSnake\Eventsource\Repository;
+use BattleSnake\Eventsource\EventRepository;
 use BattleSnake\Handler\EndHandler;
 use BattleSnake\Handler\InfoHandler;
 use BattleSnake\Handler\MoveHandler;
@@ -12,7 +12,6 @@ use BattleSnake\Handler\NotFoundHandler;
 use BattleSnake\Handler\StartHandler;
 use BattleSnake\Middleware\DispatchMiddleware;
 use BattleSnake\Middleware\JsonParser;
-use BattleSnake\Middleware\RequestLoggingMiddleware;
 use Crell\Serde\SerdeCommon;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -49,7 +48,7 @@ class Application
         $api_dispatch = new DispatchMiddleware();
 
         $serde = new SerdeCommon();
-        $repository = new Repository(
+        $repository = new EventRepository(
             $this->connection,
             $serde,
         );

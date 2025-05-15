@@ -1,6 +1,6 @@
 <?php
 
-namespace BattleSnake\Tests\Unit\Event;
+namespace BattleSnake\Tests\Unit\Eventsource;
 
 use BattleSnake\Domain\GameState;
 use BattleSnake\Eventsource\Event;

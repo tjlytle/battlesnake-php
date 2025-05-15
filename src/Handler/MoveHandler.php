@@ -7,7 +7,7 @@ namespace BattleSnake\Handler;
 use BattleSnake\Domain\Parser\GameStateParserFactory;
 use BattleSnake\Event\Turn;
 use BattleSnake\Eventsource\Payload;
-use BattleSnake\Eventsource\Repository;
+use BattleSnake\Eventsource\EventRepository;
 use BattleSnake\Strategy\Random;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -18,7 +18,7 @@ class MoveHandler extends AbstractHandler
 {
     public function __construct(
         protected readonly ResponseFactoryInterface $response_factory,
-        protected readonly Repository $repository,
+        protected readonly EventRepository $repository,
     )
     {
     }

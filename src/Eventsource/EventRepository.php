@@ -6,7 +6,7 @@ use Crell\Serde\Serde;
 use Doctrine\DBAL\Connection;
 use Ramsey\Uuid\Uuid;
 
-class Repository
+class EventRepository
 {
     public function __construct(
         private readonly Connection $connection,

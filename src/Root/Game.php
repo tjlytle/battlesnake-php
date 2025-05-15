@@ -8,8 +8,11 @@ use BattleSnake\Event\Turn;
 use BattleSnake\Eventsource\Event;
 use Ramsey\Uuid\UuidInterface;
 
-class Game
+class Game implements AggregateRoot
 {
+    private array $event_buffer;
+    private int $version = 0;
+
     private bool $is_finished = false;
     private bool $is_started = false;
     private int $turn = 0;
@@ -19,10 +22,34 @@ class Game
     ) {
     }
 
+    public function getAggregateRootId(): UuidInterface
+    {
+        return $this->id;
+    }
+
+    public function getVersion(): int
+    {
+        return $this->version;
+    }
+
     public function loadEvents(Event ...$events): void
     {
         foreach ($events as $event) {
             $this->apply($event);
+        }
+    }
+
+    public function drainEventBuffer(): array
+    {
+        $events = $this->event_buffer;
+        $this->event_buffer = [];
+        return $events;
+    }
+
+    public function addEvent(Event ...$events): void
+    {
+        foreach ($events as $event) {
+            $this->bufferEvent($event);
         }
     }
 
@@ -37,6 +64,8 @@ class Game
         } elseif ($event instanceof End) {
             $this->is_finished = true;
         }
+
+        $this->version++;
     }
 
     public function isFinished(): bool
@@ -52,5 +81,11 @@ class Game
     public function getTurn(): int
     {
         return $this->turn;
+    }
+
+    private function bufferEvent(Event $event): void
+    {
+        $this->event_buffer[] = $event;
+        $this->apply($event);
     }
 }

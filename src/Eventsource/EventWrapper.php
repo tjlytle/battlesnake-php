@@ -3,10 +3,9 @@
 namespace BattleSnake\Eventsource;
 
 use BattleSnake\Event\End;
-use BattleSnake\Event\Move;
 use BattleSnake\Event\Start;
 use BattleSnake\Event\Turn;
-use BattleSnake\Tests\Unit\Event\EventFixture;
+use BattleSnake\Tests\Unit\Eventsource\EventFixture;
 use Crell\Serde\Attributes\StaticTypeMap;
 
 readonly class EventWrapper

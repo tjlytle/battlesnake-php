@@ -1,12 +1,12 @@
 <?php
 
-namespace BattleSnake\Tests\Unit\Event;
+namespace BattleSnake\Tests\Unit\Eventsource;
 
 use BattleSnake\Domain\GameState;
 use BattleSnake\Domain\Parser\GameStateParser;
 use BattleSnake\Domain\Parser\GameStateParserFactory;
 use BattleSnake\Eventsource\Payload;
-use BattleSnake\Eventsource\Repository as SUT;
+use BattleSnake\Eventsource\EventRepository as SUT;
 use BattleSnake\Eventsource\VersionCollision;
 use BattleSnake\Tests\SnekSpec\Parser;
 use BattleSnake\Tests\Unit\ApplicationProvider;
@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use stdClass;
 
-class RepositoryTest extends TestCase
+class EventRepositoryTest extends TestCase
 {
     use ApplicationProvider;
 

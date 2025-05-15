@@ -25,18 +25,70 @@ class GameTest extends TestCase
         $game->loadEvents(...$events);
 
         $assertion($game);
+
+        self::assertSame(count($events), $game->getVersion());
     }
 
     #[Test]
     public function can_add_new_events(): void
     {
+        $uuid = Uuid::uuid4();
+        $game = new SUT($uuid);
 
+        $game->loadEvents(
+            new Start(self::getJsonData('four-player-large-start')),
+            new Turn(self::getJsonData('four-player-large-move1')),
+            new Turn(self::getJsonData('four-player-large-move2')),
+            new Turn(self::getJsonData('four-player-large-move3')),
+            new Turn(self::getJsonData('four-player-large-move4')),
+        );
+
+        self::assertSame(3, $game->getTurn());
+
+        $game->addEvent(
+            new Turn(self::getJsonData('four-player-large-move6')),
+            new Turn(self::getJsonData('four-player-large-move7')),
+            new Turn(self::getJsonData('four-player-large-move8')),
+            new Turn(self::getJsonData('four-player-large-move9')),
+            new Turn(self::getJsonData('four-player-large-move10')),
+            new End(self::getJsonData('four-player-large-end')),
+        );
+
+        self::assertSame(9, $game->getTurn());
+        self::assertTrue($game->isFinished());
+        self::assertSame(11, $game->getVersion());
     }
 
     #[Test]
     public function can_get_events_not_persisted(): void
     {
+        $uuid = Uuid::uuid4();
+        $game = new SUT($uuid);
 
+        $game->loadEvents(
+            new Start(self::getJsonData('four-player-large-start')),
+            new Turn(self::getJsonData('four-player-large-move1')),
+            new Turn(self::getJsonData('four-player-large-move2')),
+            new Turn(self::getJsonData('four-player-large-move3')),
+            new Turn(self::getJsonData('four-player-large-move4')),
+        );
+
+        self::assertSame(3, $game->getTurn());
+
+        $events = [
+            new Turn(self::getJsonData('four-player-large-move6')),
+            new Turn(self::getJsonData('four-player-large-move7')),
+            new Turn(self::getJsonData('four-player-large-move8')),
+            new Turn(self::getJsonData('four-player-large-move9')),
+            new Turn(self::getJsonData('four-player-large-move10')),
+            new End(self::getJsonData('four-player-large-end')),
+        ];
+
+        $game->addEvent(...$events);
+
+        self::assertSame($events, $game->drainEventBuffer());
+
+        self::assertSame([], $game->drainEventBuffer());
     }
 
     public static function provideEventsAndAssertion(): \Generator
