@@ -73,8 +73,10 @@ class RootRepositoryTest extends TestCase
 
         $call_order = [];
 
-        $this->dispatcher->dispatch(Argument::cetera())->will(function($args) use (&$call_order) {
-            $call_order[] = $args[0];
+        $this->dispatcher->dispatch(Argument::cetera())->will(function($args) use (&$call_order, $aggregate_id) {
+            TestCase::assertInstanceOf(Payload::class, $args[0]);
+            TestCase::assertSame($aggregate_id, $args[0]->uuid);
+            $call_order[] = $args[0]->event;
             return $args[0];
         })->shouldBeCalledTimes(3);
 

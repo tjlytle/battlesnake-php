@@ -28,8 +28,8 @@ class RootRepository
         }
         $this->event_repository->persist(...$payloads);
 
-        foreach ($events as $event) {
-            $this->event_dispatcher->dispatch($event);
+        foreach ($payloads as $payload) {
+            $this->event_dispatcher->dispatch($payload);
         }
     }
 
