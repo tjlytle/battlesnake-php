@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BattleSnake\Core;
 
 use BattleSnake\Eventsource\EventRepository;
+use BattleSnake\Eventsource\Payload;
 use BattleSnake\Handler\EndHandler;
 use BattleSnake\Handler\InfoHandler;
 use BattleSnake\Handler\MoveHandler;
@@ -12,6 +13,7 @@ use BattleSnake\Handler\NotFoundHandler;
 use BattleSnake\Handler\StartHandler;
 use BattleSnake\Middleware\DispatchMiddleware;
 use BattleSnake\Middleware\JsonParser;
+use BattleSnake\Projection\GameStatListener;
 use BattleSnake\Root\RootRepository;
 use Crell\Serde\SerdeCommon;
 use Crell\Tukio\Dispatcher;
@@ -30,6 +32,7 @@ class Application implements ListenerProviderInterface
 {
     public readonly Connection $connection;
     public readonly EntityManager $entity_manager;
+    public readonly Dispatcher $event_dispatcher;
     private QueueRequestHandler $queue_handler;
     public readonly RootRepository $root_repository;
 
@@ -62,13 +65,22 @@ class Application implements ListenerProviderInterface
     #[\Override]
     public function getListenersForEvent(object $event): iterable
     {
-        return [];
-    }
+        if (!($event instanceof Payload)) {
+            return [];
+        }
+
+        return match($event->event::class) {
+            'BattleSnake\Event\End' => [
+                new GameStatListener($this->entity_manager),
+            ],
+            default => [],
+        };
+   }
 
     private function setupEventsourcing(): void
     {
         // Add event dispatcher / listener
-        $event_dispatcher = new Dispatcher($this);
+        $this->event_dispatcher = new Dispatcher($this);
 
         $serde = new SerdeCommon();
         $event_repository = new EventRepository(
@@ -78,7 +90,7 @@ class Application implements ListenerProviderInterface
 
         $this->root_repository = new RootRepository(
             $event_repository,
-            $event_dispatcher,
+            $this->event_dispatcher,
         );
 
     }
