@@ -35,6 +35,30 @@ class MoveClassifierTest extends TestCase
         $state = <<<EOD
             -----------
             -----------
+            -----0-----
+            -----A0----
+            -----bC----
+            -----bd----
+            -----Bd----
+            ------D----
+            -----------
+            -----------
+            -----------
+            EOD;
+
+        yield [
+            $state,
+            new MoveCollection(
+                new Move(Direction::UP, new ClassificationCollection(Classification::SAFE, Classification::FOOD)),
+                new Move(Direction::LEFT, new ClassificationCollection(Classification::SAFE)),
+                new Move(Direction::DOWN, new ClassificationCollection(Classification::END)),
+                new Move(Direction::RIGHT, new ClassificationCollection(Classification::FOOD, Classification::DANGER)),
+            )
+        ];
+
+        $state = <<<EOD
+            -----------
+            -----------
             -----------
             bbbB-------
             b----------

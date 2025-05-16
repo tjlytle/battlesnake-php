@@ -23,29 +23,27 @@ class MoveClassifier
             $position = $this->getAdjacentPosition($head, $direction);
             $classifications = [];
             
-            // Check for food
-            if ($this->isFood($position, $board)) {
-                $classifications[] = Classification::FOOD;
-            }
-            
-            // Check for hazards
+            // First check for unsafe moves
             if ($this->isHazard($position, $board)) {
                 $classifications[] = Classification::HAZARD;
             }
             
-            // Check for potential snake collisions
             if ($this->isDangerous($position, $board, $you)) {
                 $classifications[] = Classification::DANGER;
             }
-            
-            // If no classifications were assigned, it's safe
+
+            if ($this->isOutOfBounds($position, $board) || $this->isSnake($position, $board)) {
+                $classifications = [Classification::END];
+            }
+
+            // If no unsafe moves were found, must be safe
             if (empty($classifications)) {
                 $classifications[] = Classification::SAFE;
             }
 
-            // Any end condition can't also be another condition, so overwrite the list
-            if ($this->isOutOfBounds($position, $board) || $this->isSnake($position, $board)) {
-                $classifications = [Classification::END];
+            // Check for food last, to make the 'safe' classification easier to identify
+            if ($this->isFood($position, $board)) {
+                $classifications[] = Classification::FOOD;
             }
 
             $moves[] = new Move($direction, new ClassificationCollection(...$classifications));
