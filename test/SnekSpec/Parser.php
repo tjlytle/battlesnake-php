@@ -64,12 +64,6 @@ class Parser
             return count($coords) === 1 && !isset($snake_segments[strtolower($key)]);
         }, ARRAY_FILTER_USE_BOTH);
 
-        // Debug printing to understand the snake segments
-        // echo "Snake segments found: " . implode(", ", array_keys($snake_segments)) . "\n";
-        // foreach ($snake_segments as $key => $segments) {
-        //     echo "   $key: " . count($segments) . " segments\n";
-        // }
-        
         // sort heads by order to handle two segment snakes
         ksort($heads);
         $heads = array_filter($heads, fn(string $key): bool => !isset($heads[chr(ord($key) - 1)]), ARRAY_FILTER_USE_KEY);
@@ -77,9 +71,7 @@ class Parser
         $snakes = [];
         foreach ($heads as $head => $head_coords) {
             $snake = $this->traverseSnakeBody((string) $head, $snake_segments);
-            // Debugging to understand what's happening with the snake segments
-            // echo "Snake $head with " . count($snake) . " segments\n";
-            
+
             $snakes[] = [
                 'id' => strtolower($head),
                 'name' => strtolower($head),
@@ -153,9 +145,8 @@ class Parser
         $visited[0] = true;
         $path = [0];
 
-        $this->dfsPaths(0, $length-1, $length, $adj, $visited, $path, $paths);
+        $this->findPaths(0, $length-1, $length, $adj, $visited, $path, $paths);
 
-        // 4) Pick the path that covers every segment
         if (empty($paths)) {
             throw new \Exception("No path from head to tail found.");
         }
@@ -170,7 +161,7 @@ class Parser
         return $bodyCoords;
     }
 
-    private function dfsPaths(
+    private function findPaths(
         int $current,
         int $tailIndex,
         int $N,
@@ -192,7 +183,7 @@ class Parser
                 $visited[$nbr] = true;
                 $path[] = $nbr;
 
-                $this->dfsPaths($nbr, $tailIndex, $N, $adj, $visited, $path, $paths);
+                $this->findPaths($nbr, $tailIndex, $N, $adj, $visited, $path, $paths);
                 if (count($paths) > 0) {
                     return;
                 }

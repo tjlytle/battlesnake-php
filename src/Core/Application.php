@@ -14,18 +14,24 @@ use BattleSnake\Middleware\DispatchMiddleware;
 use BattleSnake\Middleware\JsonParser;
 use BattleSnake\Root\RootRepository;
 use Crell\Serde\SerdeCommon;
+use Crell\Tukio\Dispatcher;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Tools\DsnParser;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\ORMSetup;
 use Laminas\Diactoros\ServerRequestFactory;
+use Psr\EventDispatcher\ListenerProviderInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class Application
+class Application implements ListenerProviderInterface
 {
     public readonly Connection $connection;
+    public readonly EntityManager $entity_manager;
     private QueueRequestHandler $queue_handler;
+    public readonly RootRepository $root_repository;
 
     public function __construct(
         private readonly ResponseFactoryInterface $response_factory,
@@ -33,20 +39,36 @@ class Application
     )
     {
         $this->setupDatabase();
+        $this->setupEventsourcing();
         $this->setupHandlers();
     }
 
-    private function setupDatabase()
+    private function setupDatabase(): void
     {
         $dsn_parser = new DsnParser(['mysql' => 'pdo_mysql']);
         $connection_params = $dsn_parser->parse($this->config->dsn);
         $this->connection = DriverManager::getConnection($connection_params);
+
+        // Setup Doctrine ORM configuration
+        $config = ORMSetup::createAttributeMetadataConfiguration(
+            [__DIR__ . '/../Projection'], // Entity directory paths
+            true // Dev mode
+        );
+
+        // Create the entity manager with the existing connection
+        $this->entity_manager = new EntityManager($this->connection, $config);
     }
 
-    private function setupHandlers(): void
+    #[\Override]
+    public function getListenersForEvent(object $event): iterable
     {
-        // Create the API dispatch middleware
-        $api_dispatch = new DispatchMiddleware();
+        return [];
+    }
+
+    private function setupEventsourcing(): void
+    {
+        // Add event dispatcher / listener
+        $event_dispatcher = new Dispatcher($this);
 
         $serde = new SerdeCommon();
         $event_repository = new EventRepository(
@@ -54,9 +76,17 @@ class Application
             $serde,
         );
 
-        $root_repository = new RootRepository(
+        $this->root_repository = new RootRepository(
             $event_repository,
+            $event_dispatcher,
         );
+
+    }
+
+    private function setupHandlers(): void
+    {
+        // Create the API dispatch middleware
+        $api_dispatch = new DispatchMiddleware();
 
         // Add routes
         $api_dispatch->addRoute('/', new InfoHandler($this->response_factory));
@@ -64,21 +94,21 @@ class Application
             '/start',
             new StartHandler(
                 $this->response_factory,
-                $root_repository,
+                $this->root_repository,
             ),
         );
         $api_dispatch->addRoute(
             '/move',
             new MoveHandler(
                 $this->response_factory,
-                $root_repository,
+                $this->root_repository,
             ),
         );
         $api_dispatch->addRoute(
             '/end',
             new EndHandler(
                 $this->response_factory,
-                $root_repository
+                $this->root_repository
             ),
         );
 
@@ -101,7 +131,7 @@ class Application
     {
         $statusCode = $response->getStatusCode();
         $reasonPhrase = $response->getReasonPhrase();
-        
+
         // Send status line
         header(sprintf(
             'HTTP/%s %d%s',
@@ -109,7 +139,7 @@ class Application
             $statusCode,
             $reasonPhrase ? ' ' . $reasonPhrase : ''
         ), true, $statusCode);
-        
+
         // Iterate over headers and send them, handling multi-value headers
         foreach ($response->getHeaders() as $name => $values) {
             $replace = true;
@@ -118,7 +148,7 @@ class Application
                 $replace = false;
             }
         }
-        
+
         // Need to rewind the body before trying to send it
         if ($response->getBody()->isSeekable()) {
             $response->getBody()->rewind();
