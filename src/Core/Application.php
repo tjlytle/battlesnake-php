@@ -33,6 +33,7 @@ class Application implements ListenerProviderInterface
     public readonly Connection $connection;
     public readonly EntityManager $entity_manager;
     public readonly Dispatcher $event_dispatcher;
+    public readonly EventRepository $event_repository;
     private QueueRequestHandler $queue_handler;
     public readonly RootRepository $root_repository;
 
@@ -71,7 +72,10 @@ class Application implements ListenerProviderInterface
 
         return match($event->event::class) {
             'BattleSnake\Event\End' => [
-                new GameStatListener($this->entity_manager),
+                new GameStatListener(
+                    $this->entity_manager,
+                    $this->root_repository,
+                ),
             ],
             default => [],
         };
@@ -83,13 +87,13 @@ class Application implements ListenerProviderInterface
         $this->event_dispatcher = new Dispatcher($this);
 
         $serde = new SerdeCommon();
-        $event_repository = new EventRepository(
+        $this->event_repository = new EventRepository(
             $this->connection,
             $serde,
         );
 
         $this->root_repository = new RootRepository(
-            $event_repository,
+            $this->event_repository,
             $this->event_dispatcher,
         );
 

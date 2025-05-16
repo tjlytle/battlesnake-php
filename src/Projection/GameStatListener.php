@@ -5,12 +5,14 @@ namespace BattleSnake\Projection;
 use BattleSnake\Domain\GameState;
 use BattleSnake\Event\End;
 use BattleSnake\Eventsource\Payload;
+use BattleSnake\Root\RootRepository;
 use Doctrine\ORM\EntityManager;
 
 class GameStatListener
 {
     public function __construct(
         private readonly EntityManager $entity_manager,
+        private readonly RootRepository $root_repository,
     ) {
     }
 
@@ -25,9 +27,13 @@ class GameStatListener
         $aggregate_id = $payload->uuid;
         $win = $this->determineWin($event->game);
 
+        $game = $this->root_repository->retrieve($aggregate_id);
+
         $game_stat = new GameStat(
             $aggregate_id,
             $win,
+            $event->game->turn,
+            $game->getTurn()
         );
 
         $this->entity_manager->persist($game_stat);

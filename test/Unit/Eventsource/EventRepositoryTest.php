@@ -35,6 +35,60 @@ class EventRepositoryTest extends TestCase
     }
 
     #[Test]
+    public function getAll_returns_all_events(): void
+    {
+        // given a set of events
+        $event1 = new EventFixture(
+            'event1',
+            1,
+            1.0,
+            true,
+            ['array'],
+            new \DateTimeImmutable('2025-05-14T17:24:47'),
+            $this->getGame(),
+        );
+
+        $event2 = new EventFixture(
+            'event2',
+            2,
+            1.2,
+            false,
+            [1, 'red'],
+            new \DateTimeImmutable('2025-05-14T17:24:47'),
+            $this->getGame(),
+        );
+
+        $event3 = new EventFixture(
+            'event3',
+            3,
+            3.4,
+            false,
+            [],
+            new \DateTimeImmutable('2025-05-14T17:24:47'),
+            $this->getGame(),
+        );
+
+        $aggregate_id = Uuid::uuid4();
+        $other_aggregate_id = Uuid::uuid4();
+        $now = new \DateTimeImmutable();
+        $this->sut->persist(
+            new Payload($aggregate_id, 1,  $event1, $now),
+            new Payload($aggregate_id, 2,  $event2, $now),
+            new Payload($other_aggregate_id, 1,  $event3, $now),
+        );
+
+        $events = $this->sut->getAll();
+        $events = iterator_to_array($events);
+
+        $connection = $this->getApplication()->connection;
+        $stmt = $connection->prepare('SELECT count(*) FROM game_events');
+        $count = $stmt->executeQuery()->fetchOne();
+
+        self::assertCount($count, $events);
+        self::assertInstanceOf(Payload::class, $events[0]);
+    }
+
+    #[Test]
     public function persist_saves_ordered_event(): void
     {
         // given a set of events
@@ -69,12 +123,21 @@ class EventRepositoryTest extends TestCase
         );
 
         // passed to persist with an aggregate id and a version
-        $aggregate_id = Uuid::uuid7();
+        $aggregate_id = Uuid::uuid4();
         $now = new \DateTimeImmutable();
         $this->sut->persist(
             new Payload($aggregate_id, 1,  $event1, $now),
             new Payload($aggregate_id, 2,  $event2, $now),
             new Payload($aggregate_id, 3,  $event3, $now),
+        );
+
+        // make sure we don't fetch other events
+        $other_aggregate_id = Uuid::uuid4();
+        $now = new \DateTimeImmutable();
+        $this->sut->persist(
+            new Payload($other_aggregate_id, 1,  $event1, $now),
+            new Payload($other_aggregate_id, 2,  $event2, $now),
+            new Payload($other_aggregate_id, 3,  $event3, $now),
         );
 
         // puts rows in database

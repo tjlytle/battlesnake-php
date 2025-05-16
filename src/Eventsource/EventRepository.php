@@ -44,6 +44,9 @@ class EventRepository
         }
     }
 
+    /**
+     * @return Payload[]
+     */
     public function get(mixed $aggregateId): array
     {
         $stmt = $this->connection->prepare('SELECT * FROM game_events WHERE aggregate_id = :aggregate_id ORDER BY version ASC');
@@ -61,5 +64,23 @@ class EventRepository
         }
 
         return $payloads;
+    }
+
+    /**
+     * @return \Generator<Payload>
+     */
+    public function getAll(): \Generator
+    {
+        $stmt = $this->connection->prepare('SELECT * FROM game_events ORDER BY date ASC');
+        $result = $stmt->executeQuery();
+
+        while ($row = $result->fetchAssociative()) {
+            yield new Payload(
+                Uuid::fromString($row['aggregate_id']),
+                $row['version'],
+                $this->serde->deserialize($row['event'], 'json', EventWrapper::class)->event,
+                new \DateTimeImmutable($row['date'])
+            );
+        }
     }
 }

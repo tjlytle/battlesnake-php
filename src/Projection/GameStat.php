@@ -17,15 +17,28 @@ class GameStat
     #[ORM\Column(type: 'boolean')]
     private bool $win;
 
-    public function __construct(UuidInterface $aggregate_id, bool $win)
+    #[ORM\Column(type: 'integer')]
+    private int $length;
+
+    #[ORM\Column(type: 'integer')]
+    private int $survived;
+
+    public function __construct(
+        UuidInterface $aggregate_id,
+        bool $win,
+        int $length,
+        int $survived,
+    )
     {
         $this->aggregate_id = $aggregate_id->toString();
         $this->win = $win;
+        $this->length = $length;
+        $this->survived = $survived;
     }
 
     public function getId(): string
     {
-        return $this->id;
+        return $this->aggregate_id;
     }
 
     public function getAggregateId(): UuidInterface
@@ -36,5 +49,15 @@ class GameStat
     public function isWin(): bool
     {
         return $this->win;
+    }
+
+    public function getLength(): int
+    {
+        return $this->length;
+    }
+
+    public function getSurvived(): int
+    {
+        return $this->survived;
     }
 }

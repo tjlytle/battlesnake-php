@@ -11,20 +11,34 @@ use BattleSnake\Eventsource\Event;
 use BattleSnake\Eventsource\Payload;
 use BattleSnake\Projection\GameStat;
 use BattleSnake\Projection\GameStatListener as SUT;
+use BattleSnake\Root\Game;
+use BattleSnake\Root\RootRepository;
 use BattleSnake\Tests\Unit\ApplicationProvider;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Prophecy\Prophecy\ObjectProphecy;
 use Ramsey\Uuid\Uuid;
 
 class GameStatListenerTest extends TestCase
 {
     use ApplicationProvider;
+    use ProphecyTrait;
+
+    /**
+     * @var ObjectProphecy<RootRepository>
+     */
+    private ObjectProphecy $root_repository;
+    private SUT $sut;
 
     protected function setUp(): void
     {
+        $this->root_repository = $this->prophesize(RootRepository::class);
+
         $this->sut = new SUT(
             $this->getApplication()->entity_manager,
+            $this->root_repository->reveal(),
         );
     }
 
@@ -49,9 +63,13 @@ class GameStatListenerTest extends TestCase
 
     #[Test]
     #[DataProvider('provideEndEvents')]
-    public function invoke_creates_stat_projection(Event $event, bool $win): void
+    public function invoke_creates_stat_projection(Event $event, bool $win, int $turn): void
     {
         $aggregate_id = Uuid::uuid4();
+
+        $game = $this->prophesize(Game::class);
+        $game->getTurn()->willReturn($turn);
+        $this->root_repository->retrieve($aggregate_id)->willReturn($game);
 
         $this->sut->__invoke(new Payload(
             $aggregate_id,
@@ -66,8 +84,11 @@ class GameStatListenerTest extends TestCase
         );
 
         self::assertNotNull($stat);
+        self::assertInstanceOf(GameStat::class, $stat);
         self::assertSame($aggregate_id->toString(), $stat->getAggregateId()->toString());
         self::assertSame($win, $stat->isWin());
+        self::assertSame($turn, $stat->getSurvived());
+        self::assertSame(100, $stat->getLength()); // in the event payload
     }
 
     public static function provideNoopEvents(): \Generator
@@ -78,8 +99,16 @@ class GameStatListenerTest extends TestCase
 
     public static function provideEndEvents(): \Generator
     {
-        yield 'loss' => [new End(self::getJsonData('four-player-large-end')), false];
-        yield 'win' => [new End(self::getJsonData('four-player-large-alternate-end')), true];
+        yield 'loss' => [
+            new End(self::getJsonData('four-player-large-end')),
+            false,
+            10
+        ];
+        yield 'win' => [
+            new End(self::getJsonData('four-player-large-alternate-end')),
+            true,
+            100
+        ];
     }
 
     private static function getJsonData(string $string): GameState
