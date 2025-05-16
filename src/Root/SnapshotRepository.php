@@ -49,7 +49,7 @@ class SnapshotRepository implements Repository
 
     public function snapshot(AggregateRoot $root): void
     {
-        $stmt  = $this->connection->prepare('INSERT INTO game_snapshot (aggregate_id, version, serialized) VALUES (:aggregate_id, :version, :serialized)');
+        $stmt  = $this->connection->prepare('INSERT INTO game_snapshot (aggregate_id, version, serialized) VALUES (:aggregate_id, :version, :serialized) ON DUPLICATE KEY UPDATE version = :version, serialized = :serialized');
         $stmt->bindValue('aggregate_id', $root->getAggregateRootId()->toString());
         $stmt->bindValue('version', $root->getVersion());
         $stmt->bindValue('serialized', serialize($root));

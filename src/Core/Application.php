@@ -15,6 +15,7 @@ use BattleSnake\Middleware\DispatchMiddleware;
 use BattleSnake\Middleware\JsonParser;
 use BattleSnake\Projection\GameStatListener;
 use BattleSnake\Root\RootRepository;
+use BattleSnake\Root\SnapshotRepository;
 use Crell\Serde\SerdeCommon;
 use Crell\Tukio\Dispatcher;
 use Doctrine\DBAL\Connection;
@@ -117,7 +118,11 @@ class Application implements ListenerProviderInterface
             '/move',
             new MoveHandler(
                 $this->response_factory,
-                $this->root_repository,
+                new SnapshotRepository(
+                    $this->event_repository,
+                    $this->root_repository,
+                    $this->connection,
+                ),
             ),
         );
         $api_dispatch->addRoute(

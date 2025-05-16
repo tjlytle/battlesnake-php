@@ -42,6 +42,44 @@ class SnapshotRepositoryTest extends TestCase
     }
 
     #[Test]
+    public function snapshot_replaces_existing_snapshot(): void
+    {
+        $aggregate_id = Uuid::uuid4();
+        $game = new Game($aggregate_id);
+
+        $stmt = $this->getApplication()->connection->prepare('INSERT INTO game_snapshot (aggregate_id, version, serialized) VALUES (:aggregate_id, :version, :serialized)');
+        $stmt->bindValue('aggregate_id', $aggregate_id->toString());
+        $stmt->bindValue('version', 1);
+        $stmt->bindValue('serialized', serialize($game));
+        $stmt->executeStatement();
+
+        $game->loadEvents(
+            new Start(self::getJsonData('four-player-large-start')),
+            new Turn(self::getJsonData('four-player-large-move1')),
+            new Turn(self::getJsonData('four-player-large-move2')),
+            new Turn(self::getJsonData('four-player-large-move3')),
+            new Turn(self::getJsonData('four-player-large-move4')),
+            new Turn(self::getJsonData('four-player-large-move5')),
+            new Turn(self::getJsonData('four-player-large-move6')),
+            new Turn(self::getJsonData('four-player-large-move7')),
+        );
+
+        $this->sut->snapshot($game);
+
+        $connection = $this->getApplication()->connection;
+        $stmt = $connection->prepare('SELECT * FROM game_snapshot WHERE aggregate_id = :aggregate_id');
+        $stmt->bindValue(':aggregate_id', $aggregate_id, );
+        $rows = $stmt->executeQuery()->fetchAllAssociative();
+
+        self::assertCount(1, $rows);
+        self::assertEquals($aggregate_id->toString(), $rows[0]['aggregate_id']);
+        self::assertEquals($game->getVersion(), $rows[0]['version']);
+        $serialized = $rows[0]['serialized'];
+
+        self::assertEquals($game, unserialize($serialized));
+    }
+
+    #[Test]
     public function snapshot_serializes_root_with_version_and_id(): void
     {
         $aggregate_id = Uuid::uuid4();
