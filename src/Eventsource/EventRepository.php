@@ -5,6 +5,7 @@ namespace BattleSnake\Eventsource;
 use Crell\Serde\Serde;
 use Doctrine\DBAL\Connection;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class EventRepository
 {
@@ -47,10 +48,15 @@ class EventRepository
     /**
      * @return Payload[]
      */
-    public function get(mixed $aggregateId): array
+    public function get(mixed $aggregateId, int|null $version = null): array
     {
-        $stmt = $this->connection->prepare('SELECT * FROM game_events WHERE aggregate_id = :aggregate_id ORDER BY version ASC');
-        $stmt->bindValue(':aggregate_id', $aggregateId instanceof \Ramsey\Uuid\UuidInterface ? $aggregateId->toString() : $aggregateId);
+        if ($version) {
+            $stmt = $this->connection->prepare('SELECT * FROM game_events WHERE aggregate_id = :aggregate_id AND version > :version ORDER BY version ASC');
+            $stmt->bindValue(':version', $version);
+        } else {
+            $stmt = $this->connection->prepare('SELECT * FROM game_events WHERE aggregate_id = :aggregate_id ORDER BY version ASC');
+        }
+        $stmt->bindValue(':aggregate_id', $aggregateId instanceof UuidInterface ? $aggregateId->toString() : $aggregateId);
         $result = $stmt->executeQuery();
 
         $payloads = [];

@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Ramsey\Uuid\UuidInterface;
 
-class RootRepository
+class RootRepository implements Repository
 {
     public function __construct(
         private readonly EventRepository $event_repository,
