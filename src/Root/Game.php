@@ -3,7 +3,9 @@
 namespace BattleSnake\Root;
 
 use BattleSnake\Command\Command;
+use BattleSnake\Domain\Direction;
 use BattleSnake\Event\End;
+use BattleSnake\Event\Nudge;
 use BattleSnake\Event\Start;
 use BattleSnake\Event\Turn;
 use BattleSnake\Eventsource\Event;
@@ -12,6 +14,7 @@ use Ramsey\Uuid\UuidInterface;
 class Game implements AggregateRoot
 {
     private array $event_buffer = [];
+    private Direction|null $last_nudge = null;
     private int $version = 0;
 
     private bool $is_finished = false;
@@ -75,6 +78,8 @@ class Game implements AggregateRoot
             $this->turn = $event->game->turn;
         } elseif ($event instanceof End) {
             $this->is_finished = true;
+        } elseif ($event instanceof Nudge) {
+            $this->last_nudge = $event->direction;
         }
 
         $this->version++;
@@ -93,6 +98,11 @@ class Game implements AggregateRoot
     public function getTurn(): int
     {
         return $this->turn;
+    }
+
+    public function getLastNudge(): ?Direction
+    {
+        return $this->last_nudge;
     }
 
     private function bufferEvent(Event $event): void

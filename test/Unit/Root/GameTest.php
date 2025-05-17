@@ -84,7 +84,29 @@ class GameTest extends TestCase
         self::assertCount(0, $events);
     }
 
+    #[Test]
+    public function nudge_event_tracks_last_nudge(): void
+    {
+        $uuid = Uuid::uuid4();
+        $game = new SUT($uuid);
 
+        $game->loadEvents(
+            new Start(self::getJsonData('four-player-large-start')),
+            new Turn(self::getJsonData('four-player-large-move1')),
+            new Turn(self::getJsonData('four-player-large-move2')),
+            new Turn(self::getJsonData('four-player-large-move3')),
+            new Turn(self::getJsonData('four-player-large-move4')),
+            new End(self::getJsonData('four-player-large-end')),
+        );
+
+        self::assertNull($game->getLastNudge());
+
+        $game->addEvent(new NudgeEvent(Direction::DOWN));
+        self::assertSame(Direction::DOWN, $game->getLastNudge());
+
+        $game->addEvent(new NudgeEvent(Direction::UP));
+        self::assertSame(Direction::UP, $game->getLastNudge());
+    }
 
     #[Test]
     public function can_add_new_events(): void
