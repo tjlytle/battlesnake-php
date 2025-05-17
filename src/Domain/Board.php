@@ -9,9 +9,9 @@ final readonly class Board
     public function __construct(
         public int $height,
         public int $width,
-        public CoordinateCollection $food,
-        public CoordinateCollection $hazards,
-        public BattlesnakeCollection $snakes,
+        public CoordinateCollection $food = new CoordinateCollection(),
+        public CoordinateCollection $hazards = new CoordinateCollection(),
+        public BattlesnakeCollection $snakes = new BattlesnakeCollection(),
     ) {
     }
 }

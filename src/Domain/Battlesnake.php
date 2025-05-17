@@ -10,7 +10,7 @@ final readonly class Battlesnake
         public string $id,
         public string $name,
         public int $health,
-        public CoordinateCollection $body,
+        public CoordinateCollection $body = new CoordinateCollection(),
         public string $latency = '',
         public ?Coordinate $head = null,
         public int $length = 0,

@@ -9,7 +9,7 @@ use BattleSnake\Domain\CoordinateCollection;
 use BattleSnake\Domain\Direction;
 use BattleSnake\Domain\GameState;
 
-class Random
+class Random implements Strategy
 {
     public function __invoke(GameState $state): Direction
     {
