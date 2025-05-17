@@ -8,6 +8,7 @@ use BattleSnake\Eventsource\EventRepository;
 use BattleSnake\Eventsource\Payload;
 use BattleSnake\Handler\EndHandler;
 use BattleSnake\Handler\InfoHandler;
+use BattleSnake\Handler\ManualHandler;
 use BattleSnake\Handler\MoveHandler;
 use BattleSnake\Handler\NotFoundHandler;
 use BattleSnake\Handler\StartHandler;
@@ -130,6 +131,14 @@ class Application implements ListenerProviderInterface
             new EndHandler(
                 $this->response_factory,
                 $this->root_repository
+            ),
+        );
+
+        $api_dispatch->addRoute(
+            '/manual',
+            new ManualHandler(
+                $this->response_factory,
+                $this->root_repository,
             ),
         );
 
