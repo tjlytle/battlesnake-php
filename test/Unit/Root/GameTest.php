@@ -2,15 +2,17 @@
 
 namespace BattleSnake\Tests\Unit\Root;
 
+use BattleSnake\Command\Nudge;
 use BattleSnake\Domain\Direction;
 use BattleSnake\Domain\GameState;
 use BattleSnake\Domain\Parser\GameStateParserFactory;
 use BattleSnake\Event\End;
-use BattleSnake\Event\Nudge;
+use BattleSnake\Event\Nudge as NudgeEvent;
 use BattleSnake\Event\Start;
 use BattleSnake\Event\Turn;
 use BattleSnake\Eventsource\Event;
 use BattleSnake\Root\Game as SUT;
+use BattleSnake\Root\InvalidState;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -51,7 +53,7 @@ class GameTest extends TestCase
         $events = $game->drainEventBuffer();
 
         self::assertCount(1, $events);
-        self::assertInstanceOf(Nudge::class, $events[0]);
+        self::assertInstanceOf(NudgeEvent::class, $events[0]);
         self::assertSame(Direction::DOWN, $events[0]->direction);
     }
 
@@ -74,13 +76,14 @@ class GameTest extends TestCase
         try {
             $game->process($command);
             $this->fail('command should not be accepted');
-        } catch (\Exception $exception) {
+        } catch (InvalidState $e) {
 
         }
 
         $events = $game->drainEventBuffer();
         self::assertCount(0, $events);
     }
+
 
 
     #[Test]

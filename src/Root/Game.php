@@ -2,6 +2,7 @@
 
 namespace BattleSnake\Root;
 
+use BattleSnake\Command\Command;
 use BattleSnake\Event\End;
 use BattleSnake\Event\Start;
 use BattleSnake\Event\Turn;
@@ -10,7 +11,7 @@ use Ramsey\Uuid\UuidInterface;
 
 class Game implements AggregateRoot
 {
-    private array $event_buffer;
+    private array $event_buffer = [];
     private int $version = 0;
 
     private bool $is_finished = false;
@@ -51,6 +52,17 @@ class Game implements AggregateRoot
         foreach ($events as $event) {
             $this->bufferEvent($event);
         }
+    }
+
+    public function process(Command $command): void
+    {
+        // guard against invalid commands, right now no command is valid after
+        // a game is finished
+        if ($this->is_finished) {
+            throw new InvalidState('Game is finished');
+        }
+
+        $this->addEvent(...$command->process($this));
     }
 
     private function apply(Event $event): void

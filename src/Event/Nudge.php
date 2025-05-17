@@ -2,7 +2,13 @@
 
 namespace BattleSnake\Event;
 
-class Nudge
-{
+use BattleSnake\Domain\Direction;
+use BattleSnake\Eventsource\Event;
 
+readonly class Nudge implements Event
+{
+    public function __construct(
+        public Direction $direction,
+    ) {
+    }
 }
