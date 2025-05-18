@@ -19,8 +19,7 @@ class MoveHandler extends AbstractHandler
         protected readonly ResponseFactoryInterface $response_factory,
         protected readonly SnapshotRepository $repository,
         protected readonly Strategy $strategy,
-    )
-    {
+    ) {
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -40,9 +39,11 @@ class MoveHandler extends AbstractHandler
 
         $direction = ($this->strategy)($state);
 
-        return $this->createJsonResponse([
-            'move' => $direction->value,
-            'shout' => 'Randomly moving ' . $direction->value . '!',
-        ]);
+        return $this->createJsonResponse(
+            [
+                'move' => $direction->value,
+                'shout' => 'Randomly moving ' . $direction->value . '!',
+            ],
+        );
     }
-} 
+}

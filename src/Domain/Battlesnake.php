@@ -12,12 +12,11 @@ final readonly class Battlesnake
         public int $health,
         public CoordinateCollection $body = new CoordinateCollection(),
         public string $latency = '',
-        public ?Coordinate $head = null,
+        public Coordinate|null $head = null,
         public int $length = 0,
         public string $shout = '',
         public string $squad = '',
         public Customizations $customizations = new Customizations(),
     ) {
-
     }
 }

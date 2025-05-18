@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Root;
 
 use BattleSnake\Command\Command;
@@ -22,7 +24,7 @@ class Game implements AggregateRoot
     private int $turn = 0;
 
     public function __construct(
-        public readonly UuidInterface $id
+        public readonly UuidInterface $id,
     ) {
     }
 
@@ -100,7 +102,7 @@ class Game implements AggregateRoot
         return $this->turn;
     }
 
-    public function getLastNudge(): ?Direction
+    public function getLastNudge(): Direction|null
     {
         return $this->last_nudge;
     }

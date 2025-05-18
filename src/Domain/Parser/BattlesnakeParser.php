@@ -5,21 +5,19 @@ declare(strict_types=1);
 namespace BattleSnake\Domain\Parser;
 
 use BattleSnake\Domain\Battlesnake;
-use BattleSnake\Domain\Coordinate;
-use BattleSnake\Domain\CoordinateCollection;
 use BattleSnake\Domain\Customizations;
 
 final readonly class BattlesnakeParser
 {
     public function __construct(
-        private CoordinateFactory $coordinate_factory
+        private CoordinateFactory $coordinate_factory,
     ) {
     }
-    
+
     public function parse(array $data): Battlesnake
     {
         $head = null;
-        if (isset($data['head']) && is_array($data['head'])) {
+        if (isset($data['head']) && \is_array($data['head'])) {
             $head = $this->coordinate_factory->createFromArray($data['head']);
         }
 
@@ -38,8 +36,8 @@ final readonly class BattlesnakeParser
             customizations: new Customizations(
                 $customizations['color'] ?? null,
                 $customizations['head'] ?? null,
-                $customizations['tail'] ?? null
-            )
+                $customizations['tail'] ?? null,
+            ),
         );
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Middleware;
 
 use Laminas\Diactoros\Request\Serializer;
@@ -12,8 +14,8 @@ class RequestLoggingMiddleware implements MiddlewareInterface
 {
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        error_log('Request:');
-        error_log(Serializer::toString($request));
+        \error_log('Request:');
+        \error_log(Serializer::toString($request));
         return $handler->handle($request);
     }
 }

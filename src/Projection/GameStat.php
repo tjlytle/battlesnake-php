@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Projection;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -28,8 +30,7 @@ class GameStat
         bool $win,
         int $length,
         int $survived,
-    )
-    {
+    ) {
         $this->aggregate_id = $aggregate_id->toString();
         $this->win = $win;
         $this->length = $length;

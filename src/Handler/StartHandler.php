@@ -17,8 +17,7 @@ class StartHandler extends AbstractHandler
     public function __construct(
         protected readonly ResponseFactoryInterface $response_factory,
         protected readonly RootRepository $repository,
-    )
-    {
+    ) {
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

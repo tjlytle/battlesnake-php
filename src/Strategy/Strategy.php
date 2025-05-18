@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Strategy;
 
 use BattleSnake\Domain\Direction;

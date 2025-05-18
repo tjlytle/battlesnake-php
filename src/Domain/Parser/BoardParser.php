@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace BattleSnake\Domain\Parser;
 
-use BattleSnake\Domain\Board;
 use BattleSnake\Domain\BattlesnakeCollection;
-use BattleSnake\Domain\CoordinateCollection;
+use BattleSnake\Domain\Board;
 
 final readonly class BoardParser
 {
     public function __construct(
         private BattlesnakeParser $snake_parser,
-        private CoordinateFactory $coordinate_factory
+        private CoordinateFactory $coordinate_factory,
     ) {
     }
 
@@ -21,9 +20,9 @@ final readonly class BoardParser
      */
     public function parse(array $data): Board
     {
-        $battlesnakes = array_map(
+        $battlesnakes = \array_map(
             fn(array $snake) => $this->snake_parser->parse($snake),
-            $data['snakes'] ?? []
+            $data['snakes'] ?? [],
         );
         $snakes = new BattlesnakeCollection(...$battlesnakes);
 
@@ -32,7 +31,7 @@ final readonly class BoardParser
             (int)($data['width'] ?? 0),
             $this->coordinate_factory->createCollectionFromArray($data['food'] ?? []),
             $this->coordinate_factory->createCollectionFromArray($data['hazards'] ?? []),
-            $snakes
+            $snakes,
         );
     }
 }

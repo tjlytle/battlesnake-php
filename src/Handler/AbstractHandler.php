@@ -6,7 +6,6 @@ namespace BattleSnake\Handler;
 
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 abstract class AbstractHandler implements RequestHandlerInterface
@@ -19,8 +18,8 @@ abstract class AbstractHandler implements RequestHandlerInterface
     {
         $response = $this->response_factory->createResponse($status);
         $response = $response->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write(json_encode($data));
+        $response->getBody()->write(\json_encode($data));
 
         return $response;
     }
-} 
+}

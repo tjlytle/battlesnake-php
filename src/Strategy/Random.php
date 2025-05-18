@@ -1,11 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Strategy;
 
 use BattleSnake\Analyzer\Move\Classification;
 use BattleSnake\Analyzer\MoveClassifier;
-use BattleSnake\Analyzer\SafeMove;
-use BattleSnake\Domain\CoordinateCollection;
 use BattleSnake\Domain\Direction;
 use BattleSnake\Domain\GameState;
 
@@ -34,24 +34,24 @@ class Random implements Strategy
                 $best[] = $move;
             }
 
-            if (!$move->is(Classification::END)) {
+            if (! $move->is(Classification::END)) {
                 $least[] = $move;
             }
         }
 
-        $set = $moves;;
+        $set = $moves;
 
-        if (!empty($best)) {
+        if (! empty($best)) {
             $set = $best;
-        } elseif (!empty($safe)) {
+        } elseif (! empty($safe)) {
             $set = $safe;
-        } elseif (!empty($least)) {
+        } elseif (! empty($least)) {
             $set = $least;
         }
 
-        $set = iterator_to_array($set);
+        $set = \iterator_to_array($set);
 
-        $random_index = array_rand($set);
+        $random_index = \array_rand($set);
         return $set[$random_index]->direction;
     }
 }

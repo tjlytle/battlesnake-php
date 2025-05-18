@@ -11,7 +11,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class DispatchMiddleware implements MiddlewareInterface
 {
-    /** @var array<string, RequestHandlerInterface> */
+    /**
+     * @var array<string, RequestHandlerInterface>
+     */
     private array $routes = [];
 
     public function addRoute(string $path, RequestHandlerInterface $handler): void
@@ -29,4 +31,4 @@ class DispatchMiddleware implements MiddlewareInterface
 
         return $handler->handle($request);
     }
-} 
+}

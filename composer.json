@@ -2,6 +2,12 @@
     "name": "timlytle/battlesnake-php",
     "description": "A framework-less PHP implementation of Battlesnake using PSR-7, PSR-15, and PSR-17",
     "type": "project",
+    "repositories": [
+        {
+            "type": "github",
+            "url": "https://github.com/PhoneBurnerOpenSource/php-coding-standard"
+        }
+    ],
     "require": {
         "php": "^8.4",
         "psr/http-server-handler": "^1.0",
@@ -37,6 +43,12 @@
         "phpstan/phpstan-phpunit": "^1.0",
         "phpspec/prophecy": "^1.22",
         "phpspec/prophecy-phpunit": "^2.3",
-        "behat/behat": "^3.21"
+        "behat/behat": "^3.21",
+        "phoneburner/coding-standard": "dev-main"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
 }

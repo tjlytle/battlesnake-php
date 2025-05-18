@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Root;
 
 use BattleSnake\Eventsource\EventRepository;
@@ -13,8 +15,7 @@ class SnapshotRepository implements Repository
         private readonly EventRepository $event_repository,
         private readonly RootRepository $root_repository,
         private readonly Connection $connection,
-    )
-    {
+    ) {
     }
 
     #[\Override]
@@ -33,10 +34,10 @@ class SnapshotRepository implements Repository
             return $this->root_repository->retrieve($aggregate_id);
         }
 
-        $game = unserialize($snapshot['serialized']);
+        $game = \unserialize($snapshot['serialized']);
 
         $events = $this->event_repository->get($aggregate_id, $snapshot['version']);
-        $game->loadEvents(...array_map(fn(Payload $payload) => $payload->event, $events));
+        $game->loadEvents(...\array_map(fn(Payload $payload) => $payload->event, $events));
 
         return $game;
     }
@@ -49,10 +50,10 @@ class SnapshotRepository implements Repository
 
     public function snapshot(AggregateRoot $root): void
     {
-        $stmt  = $this->connection->prepare('INSERT INTO game_snapshot (aggregate_id, version, serialized) VALUES (:aggregate_id, :version, :serialized) ON DUPLICATE KEY UPDATE version = :version, serialized = :serialized');
+        $stmt = $this->connection->prepare('INSERT INTO game_snapshot (aggregate_id, version, serialized) VALUES (:aggregate_id, :version, :serialized) ON DUPLICATE KEY UPDATE version = :version, serialized = :serialized');
         $stmt->bindValue('aggregate_id', $root->getAggregateRootId()->toString());
         $stmt->bindValue('version', $root->getVersion());
-        $stmt->bindValue('serialized', serialize($root));
+        $stmt->bindValue('serialized', \serialize($root));
 
         $stmt->executeStatement();
     }

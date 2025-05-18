@@ -11,13 +11,15 @@ class InfoHandler extends AbstractHandler
 {
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->createJsonResponse([
+        return $this->createJsonResponse(
+            [
             'apiversion' => '1',
             'author' => 'totally_not_ai',
             'color' => '#FF0000',
             'head' => 'default',
             'tail' => 'default',
-            'version' => '0.0.1'
-        ]);
+            'version' => '0.0.1',
+            ],
+        );
     }
 }

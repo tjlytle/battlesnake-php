@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Domain;
 
+use ArrayIterator;
 use Crell\Serde\Attributes\SequenceField;
 use IteratorAggregate;
 use Traversable;
-use ArrayIterator;
 
 /**
  * @implements IteratorAggregate<int, Coordinate>

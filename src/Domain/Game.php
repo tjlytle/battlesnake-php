@@ -9,9 +9,9 @@ final readonly class Game
     public function __construct(
         public string $id,
         public Ruleset $ruleset,
-        public ?string $map = null,
-        public ?string $source = null,
-        public ?int $timeout = null,
+        public string|null $map = null,
+        public string|null $source = null,
+        public int|null $timeout = null,
     ) {
     }
 }

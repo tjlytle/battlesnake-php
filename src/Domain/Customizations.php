@@ -7,9 +7,9 @@ namespace BattleSnake\Domain;
 final readonly class Customizations
 {
     public function __construct(
-        public ?string $color = null,
-        public ?string $head = null,
-        public ?string $tail = null,
+        public string|null $color = null,
+        public string|null $head = null,
+        public string|null $tail = null,
     ) {
     }
 }

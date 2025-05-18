@@ -17,8 +17,7 @@ class EndHandler extends AbstractHandler
     public function __construct(
         protected readonly ResponseFactoryInterface $response_factory,
         protected readonly RootRepository $repository,
-    )
-    {
+    ) {
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -34,4 +33,4 @@ class EndHandler extends AbstractHandler
 
         return $this->response_factory->createResponse(204);
     }
-} 
+}

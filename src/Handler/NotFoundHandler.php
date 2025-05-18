@@ -11,9 +11,12 @@ class NotFoundHandler extends AbstractHandler
 {
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->createJsonResponse([
-            'error' => 'Not Found',
-            'message' => 'The requested resource was not found'
-        ], 404);
+        return $this->createJsonResponse(
+            [
+                'error' => 'Not Found',
+                'message' => 'The requested resource was not found',
+            ],
+            404,
+        );
     }
-} 
+}

@@ -10,8 +10,8 @@ final readonly class RulesetSettings
         public int $foodSpawnChance,
         public int $minimumFood,
         public int $hazardDamagePerTurn,
-        public ?RoyaleSettings $royale = null,
-        public ?SquadSettings $squad = null,
+        public RoyaleSettings|null $royale = null,
+        public SquadSettings|null $squad = null,
     ) {
     }
 }

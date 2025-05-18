@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace BattleSnake\Analyzer;
 
-use Traversable;
-use IteratorAggregate;
 use ArrayIterator;
+use IteratorAggregate;
+use Traversable;
 
 readonly class MoveCollection implements IteratorAggregate
 {
-    /** @var Move[] */
+    /**
+     * @var Move[]
+     */
     private array $moves;
 
     /**
@@ -18,8 +20,10 @@ readonly class MoveCollection implements IteratorAggregate
      */
     public function __construct(Move ...$moves)
     {
-        usort($moves, // Use the enum's name for comparison
-        fn(Move $a, Move $b) => $a->direction->name <=> $b->direction->name);
+        \usort(
+            $moves, // Use the enum's name for comparison
+            fn(Move $a, Move $b) => $a->direction->name <=> $b->direction->name,
+        );
 
         $this->moves = $moves;
     }
@@ -42,7 +46,7 @@ readonly class MoveCollection implements IteratorAggregate
 
     public function count(): int
     {
-        return count($this->moves);
+        return \count($this->moves);
     }
 
     public function isEmpty(): bool

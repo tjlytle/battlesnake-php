@@ -10,7 +10,7 @@ use BattleSnake\Domain\Ruleset;
 final class GameParser
 {
     public function __construct(
-        private RulesetSettingsParser $rulesetSettingsParser
+        private RulesetSettingsParser $rulesetSettingsParser,
     ) {
     }
 
@@ -26,11 +26,11 @@ final class GameParser
             ruleset: new Ruleset(
                 $ruleset['name'] ?? '',
                 $ruleset['version'] ?? '',
-                $this->rulesetSettingsParser->parse($ruleset['settings'] ?? [])
+                $this->rulesetSettingsParser->parse($ruleset['settings'] ?? []),
             ),
             map: $data['map'] ?? '',
             source: $data['source'] ?? '',
-            timeout: isset($data['timeout']) ? (int)$data['timeout'] : null
+            timeout: isset($data['timeout']) ? (int)$data['timeout'] : null,
         );
     }
 }

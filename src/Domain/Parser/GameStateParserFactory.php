@@ -11,11 +11,11 @@ final class GameStateParserFactory
         $coordinateFactory = new CoordinateFactory();
         $battlesnakeParser = new BattlesnakeParser($coordinateFactory);
         $rulesetSettingsParser = new RulesetSettingsParser();
-        
+
         return new GameStateParser(
             new GameParser($rulesetSettingsParser),
             new BoardParser($battlesnakeParser, $coordinateFactory),
-            $battlesnakeParser
+            $battlesnakeParser,
         );
     }
 }

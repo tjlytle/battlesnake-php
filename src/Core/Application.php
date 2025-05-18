@@ -45,8 +45,7 @@ class Application implements ListenerProviderInterface
     public function __construct(
         private readonly ResponseFactoryInterface $response_factory,
         public readonly Config $config,
-    )
-    {
+    ) {
         $this->setupDatabase();
         $this->setupEventsourcing();
         $this->setupHandlers();
@@ -61,7 +60,7 @@ class Application implements ListenerProviderInterface
         // Setup Doctrine ORM configuration
         $config = ORMSetup::createAttributeMetadataConfiguration(
             [__DIR__ . '/../Projection'], // Entity directory paths
-            true // Dev mode
+            true, // Dev mode
         );
 
         // Create the entity manager with the existing connection
@@ -71,11 +70,11 @@ class Application implements ListenerProviderInterface
     #[\Override]
     public function getListenersForEvent(object $event): iterable
     {
-        if (!($event instanceof Payload)) {
+        if (! ($event instanceof Payload)) {
             return [];
         }
 
-        return match($event->event::class) {
+        return match ($event->event::class) {
             'BattleSnake\Event\End' => [
                 new GameStatListener(
                     $this->entity_manager,
@@ -84,7 +83,7 @@ class Application implements ListenerProviderInterface
             ],
             default => [],
         };
-   }
+    }
 
     private function setupEventsourcing(): void
     {
@@ -101,7 +100,6 @@ class Application implements ListenerProviderInterface
             $this->event_repository,
             $this->event_dispatcher,
         );
-
     }
 
     private function setupHandlers(): void
@@ -138,7 +136,7 @@ class Application implements ListenerProviderInterface
             '/end',
             new EndHandler(
                 $this->response_factory,
-                $this->root_repository
+                $this->root_repository,
             ),
         );
 
@@ -171,18 +169,22 @@ class Application implements ListenerProviderInterface
         $reasonPhrase = $response->getReasonPhrase();
 
         // Send status line
-        header(sprintf(
-            'HTTP/%s %d%s',
-            $response->getProtocolVersion(),
+        \header(
+            \sprintf(
+                'HTTP/%s %d%s',
+                $response->getProtocolVersion(),
+                $statusCode,
+                $reasonPhrase ? ' ' . $reasonPhrase : '',
+            ),
+            true,
             $statusCode,
-            $reasonPhrase ? ' ' . $reasonPhrase : ''
-        ), true, $statusCode);
+        );
 
         // Iterate over headers and send them, handling multi-value headers
         foreach ($response->getHeaders() as $name => $values) {
             $replace = true;
             foreach ($values as $value) {
-                header("$name: $value", $replace);
+                \header("$name: $value", $replace);
                 $replace = false;
             }
         }

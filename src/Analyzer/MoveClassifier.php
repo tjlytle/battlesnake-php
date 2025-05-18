@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Analyzer;
 
 use BattleSnake\Analyzer\Move\Classification;
 use BattleSnake\Analyzer\Move\ClassificationCollection;
+use BattleSnake\Domain\Coordinate;
 use BattleSnake\Domain\Direction;
 use BattleSnake\Domain\GameState;
-use BattleSnake\Domain\Coordinate;
 
 class MoveClassifier
 {
@@ -15,19 +17,19 @@ class MoveClassifier
         $you = $state->you;
         $head = $you->head;
         $board = $state->board;
-        
+
         $moves = [];
-        
+
         // Analyze each possible move direction
         foreach ([Direction::UP, Direction::DOWN, Direction::LEFT, Direction::RIGHT] as $direction) {
             $position = $this->getAdjacentPosition($head, $direction);
             $classifications = [];
-            
+
             // First check for unsafe moves
             if ($this->isHazard($position, $board)) {
                 $classifications[] = Classification::HAZARD;
             }
-            
+
             if ($this->isDangerous($position, $board, $you)) {
                 $classifications[] = Classification::DANGER;
             }
@@ -48,10 +50,10 @@ class MoveClassifier
 
             $moves[] = new Move($direction, new ClassificationCollection(...$classifications));
         }
-        
+
         return new MoveCollection(...$moves);
     }
-    
+
     /**
      * Calculate the position after moving in a given direction
      */
@@ -59,26 +61,26 @@ class MoveClassifier
     {
         $x = $position->x;
         $y = $position->y;
-        
-        return match($direction) {
+
+        return match ($direction) {
             Direction::UP => new Coordinate($x, $y + 1),
             Direction::DOWN => new Coordinate($x, $y - 1),
             Direction::LEFT => new Coordinate($x - 1, $y),
             Direction::RIGHT => new Coordinate($x + 1, $y),
         };
     }
-    
+
     /**
      * Check if a position is outside the board boundaries
      */
     private function isOutOfBounds(Coordinate $position, $board): bool
     {
-        return $position->x < 0 
-            || $position->y < 0 
-            || $position->x >= $board->width 
+        return $position->x < 0
+            || $position->y < 0
+            || $position->x >= $board->width
             || $position->y >= $board->height;
     }
-    
+
     /**
      * Check if a position contains any part of a snake
      */
@@ -91,10 +93,10 @@ class MoveClassifier
                 }
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * Check if a position contains food
      */
@@ -105,10 +107,10 @@ class MoveClassifier
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * Check if a position contains a hazard
      */
@@ -119,10 +121,10 @@ class MoveClassifier
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * Check if a position is dangerous (potential collision with another snake)
      */
@@ -133,25 +135,25 @@ class MoveClassifier
             if ($snake->id === $you->id) {
                 continue;
             }
-            
+
             $head = $snake->head;
-            
+
             // Check if another snake's head can move to this position
             // (Simple implementation - in a real game you'd consider snake length for ties)
             $possibleMoves = [
                 new Coordinate($head->x, $head->y + 1),
                 new Coordinate($head->x, $head->y - 1),
                 new Coordinate($head->x - 1, $head->y),
-                new Coordinate($head->x + 1, $head->y)
+                new Coordinate($head->x + 1, $head->y),
             ];
-            
+
             foreach ($possibleMoves as $move) {
                 if ($move->x === $position->x && $move->y === $position->y) {
                     return true;
                 }
             }
         }
-        
+
         return false;
     }
 }

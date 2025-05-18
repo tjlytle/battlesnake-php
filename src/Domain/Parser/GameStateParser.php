@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace BattleSnake\Domain\Parser;
 
-use BattleSnake\Domain\Battlesnake;
-use BattleSnake\Domain\BattlesnakeCollection;
-use BattleSnake\Domain\Board;
 use BattleSnake\Domain\GameState;
 
 final class GameStateParser
@@ -14,7 +11,7 @@ final class GameStateParser
     public function __construct(
         private GameParser $gameParser,
         private BoardParser $boardParser,
-        private BattlesnakeParser $snakeParser
+        private BattlesnakeParser $snakeParser,
     ) {
     }
 
@@ -29,7 +26,7 @@ final class GameStateParser
             $this->gameParser->parse($data['game'] ?? []),
             (int)($data['turn'] ?? 0),
             $this->boardParser->parse($data['board'] ?? []),
-            $this->snakeParser->parse($data['you'] ?? [])
+            $this->snakeParser->parse($data['you'] ?? []),
         );
     }
 }

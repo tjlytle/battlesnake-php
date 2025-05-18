@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake;
 
 use BattleSnake\Core\Application;
@@ -11,7 +13,7 @@ class ApplicationFactory
     {
         return new Application(
             response_factory: new ResponseFactory(),
-            config: require(__DIR__ . '/../config/config.php'),
+            config: include __DIR__ . '/../config/config.php',
         );
     }
 }

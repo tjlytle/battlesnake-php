@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Handler;
 
 use BattleSnake\Command\Nudge;
@@ -24,7 +26,7 @@ class ManualHandler implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $body = $request->getParsedBody();
-        if (!isset($body['game_id'])) {
+        if (! isset($body['game_id'])) {
             return $this->response_factory->createResponse(400);
         }
 
@@ -37,7 +39,7 @@ class ManualHandler implements RequestHandlerInterface
         $game = $this->root_repository->retrieve($game_id);
         $direction = Direction::tryFrom($body['direction'] ?? '');
 
-        if (!$direction) {
+        if (! $direction) {
             return $this->response_factory->createResponse(400);
         }
 

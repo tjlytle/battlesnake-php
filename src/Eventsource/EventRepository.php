@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Eventsource;
 
 use Crell\Serde\Serde;
@@ -21,12 +23,15 @@ class EventRepository
 
         try {
             foreach ($payload as $item) {
-                $this->connection->insert('game_events', [
+                $this->connection->insert(
+                    'game_events',
+                    [
                     'aggregate_id' => $item->uuid->toString(),
                     'version' => $item->version,
                     'date' => $item->timestamp->format('Y-m-d H:i:s'),
-                    'event' => $this->serde->serialize(new EventWrapper($item->event), 'json')
-                ]);
+                    'event' => $this->serde->serialize(new EventWrapper($item->event), 'json'),
+                    ],
+                );
             }
 
             $this->connection->commit();
@@ -35,9 +40,11 @@ class EventRepository
 
             // Check if this is a duplicate key/integrity constraint violation
             $errorMessage = $e->getMessage();
-            if (strpos($errorMessage, 'Duplicate entry') !== false || 
-                strpos($errorMessage, 'UNIQUE constraint failed') !== false ||
-                strpos($errorMessage, 'integrity constraint violation') !== false) {
+            if (
+                \strpos($errorMessage, 'Duplicate entry') !== false
+                || \strpos($errorMessage, 'UNIQUE constraint failed') !== false
+                || \strpos($errorMessage, 'integrity constraint violation') !== false
+            ) {
                 throw new VersionCollision('Version collision detected', 0, $e);
             }
 
@@ -65,7 +72,7 @@ class EventRepository
                 Uuid::fromString($row['aggregate_id']),
                 $row['version'],
                 $this->serde->deserialize($row['event'], 'json', EventWrapper::class)->event,
-                new \DateTimeImmutable($row['date'])
+                new \DateTimeImmutable($row['date']),
             );
         }
 
@@ -85,7 +92,7 @@ class EventRepository
                 Uuid::fromString($row['aggregate_id']),
                 $row['version'],
                 $this->serde->deserialize($row['event'], 'json', EventWrapper::class)->event,
-                new \DateTimeImmutable($row['date'])
+                new \DateTimeImmutable($row['date']),
             );
         }
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Root;
 
 use BattleSnake\Eventsource\EventRepository;
@@ -22,7 +24,7 @@ class RootRepository implements Repository
 
         $payloads = [];
 
-        $version = $root->getVersion() - count($events);
+        $version = $root->getVersion() - \count($events);
         foreach ($events as $event) {
             $payloads[] = new Payload($root->getAggregateRootId(), ++$version, $event, new DateTimeImmutable());
         }

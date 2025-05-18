@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Projection;
 
 use BattleSnake\Domain\GameState;
@@ -20,7 +22,7 @@ class GameStatListener
     {
         $event = $payload->event;
 
-        if (!($event instanceof End)) {
+        if (! ($event instanceof End)) {
             return;
         }
 
@@ -33,7 +35,7 @@ class GameStatListener
             $aggregate_id,
             $win,
             $event->game->turn,
-            $game->getTurn()
+            $game->getTurn(),
         );
 
         $this->entity_manager->persist($game_stat);
