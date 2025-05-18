@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Root;
 
 use BattleSnake\Command\Nudge;
@@ -30,7 +32,7 @@ class GameTest extends TestCase
 
         $assertion($game);
 
-        self::assertSame(count($events), $game->getVersion());
+        self::assertSame(\count($events), $game->getVersion());
     }
 
     #[Test]
@@ -77,7 +79,6 @@ class GameTest extends TestCase
             $game->process($command);
             $this->fail('command should not be accepted');
         } catch (InvalidState $e) {
-
         }
 
         $events = $game->drainEventBuffer();
@@ -192,7 +193,7 @@ class GameTest extends TestCase
                 TestCase::assertFalse($game->isFinished());
                 TestCase::assertFalse($game->isStarted());
             },
-            $events[0]
+            $events[0],
         ];
 
         yield [
@@ -217,25 +218,24 @@ class GameTest extends TestCase
             $events[3],
         ];
 
-
         yield [
-           function (SUT $game) {
+            function (SUT $game) {
                 TestCase::assertTrue($game->isFinished());
                 TestCase::assertTrue($game->isStarted());
                 TestCase::assertSame(9, $game->getTurn());
             },
-            ...$events
+            ...$events,
         ];
     }
 
     private static function getJsonData(string $string): GameState
     {
         $parser = GameStateParserFactory::make();
-        $json = file_get_contents(__DIR__ . '/../../requests/' . $string . '.json');
+        $json = \file_get_contents(__DIR__ . '/../../requests/' . $string . '.json');
         if ($json === false) {
             throw new \RuntimeException('Failed to read JSON file');
         }
-        $data = json_decode($json, true);
+        $data = \json_decode($json, true);
         if ($data === null) {
             throw new \RuntimeException('Failed to decode JSON data');
         }

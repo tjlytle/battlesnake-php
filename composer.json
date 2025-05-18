@@ -44,11 +44,18 @@
         "phpspec/prophecy": "^1.22",
         "phpspec/prophecy-phpunit": "^2.3",
         "behat/behat": "^3.21",
-        "phoneburner/coding-standard": "dev-main"
+        "phoneburner/coding-standard": "dev-main",
+        "phpstan/extension-installer": "^1.4.3",
+        "phpstan/phpstan": "^2.0.2",
+        "phpstan/phpstan-deprecation-rules": "^2",
+        "phpstan/phpstan-doctrine": "^2",
+        "phpstan/phpstan-phpunit": "^2.0.1",
+        "spaze/phpstan-disallowed-calls": "^4.0.1"
     },
     "config": {
         "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true
         }
     }
 }

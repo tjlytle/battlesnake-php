@@ -1,18 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Domain\Parser\Fixture;
 
 use BattleSnake\Domain\Battlesnake;
-use BattleSnake\Domain\Board;
 use BattleSnake\Domain\Coordinate;
 use BattleSnake\Domain\CoordinateCollection;
 use BattleSnake\Domain\Customizations;
-use BattleSnake\Domain\Game;
 use BattleSnake\Domain\GameState;
-use BattleSnake\Domain\Ruleset;
-use BattleSnake\Domain\Setting\RoyaleSettings;
-use BattleSnake\Domain\Setting\RulesetSettings;
-use BattleSnake\Domain\Setting\SquadSettings;
 
 abstract class JsonFixture implements GameStateFixture
 {
@@ -36,8 +32,7 @@ abstract class JsonFixture implements GameStateFixture
         int $health = 100,
         int $length = 3,
         CoordinateCollection $body = new CoordinateCollection(),
-    ): Battlesnake
-    {
+    ): Battlesnake {
         if (empty($body->coordinates)) {
             $body = new CoordinateCollection($head, $head);
         }
@@ -48,7 +43,7 @@ abstract class JsonFixture implements GameStateFixture
             health: $health,
             body: new CoordinateCollection(
                 $head,
-                ...$body
+                ...$body,
             ),
             latency: $latency,
             head: $head,

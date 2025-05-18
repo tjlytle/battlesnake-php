@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Domain;
 
 use BattleSnake\Domain\Coordinate;
@@ -20,7 +22,7 @@ class CoordinateCollectionTest extends TestCase
 
         foreach ($collection as $index => $coordinate) {
             $this->assertInstanceOf(Coordinate::class, $coordinate);
-            $this->assertSame(match($index) {
+            $this->assertSame(match ($index) {
                 0 => $coordinate1,
                 1 => $coordinate2,
                 default => throw new \Exception('Unexpected index'),

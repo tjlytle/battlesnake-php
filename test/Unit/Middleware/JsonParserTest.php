@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Middleware;
 
 use BattleSnake\Middleware\JsonParser as SUT;
@@ -38,7 +40,7 @@ class JsonParserTest extends TestCase
         $sut = new SUT();
         self::assertSame(
             $response,
-            $sut->process($request, $handler->reveal())
+            $sut->process($request, $handler->reveal()),
         );
     }
 }

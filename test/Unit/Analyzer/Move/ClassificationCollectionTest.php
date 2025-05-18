@@ -6,7 +6,6 @@ namespace BattleSnake\Tests\Unit\Analyzer\Move;
 
 use BattleSnake\Analyzer\Move\Classification;
 use BattleSnake\Analyzer\Move\ClassificationCollection;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

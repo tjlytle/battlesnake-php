@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Handler;
 
 use BattleSnake\Domain\Direction;
@@ -37,9 +39,9 @@ class ManualHandlerTest extends TestCase
         $factory = new ServerRequestFactory();
         $request = $factory->createServerRequest('POST', '/manual');
         $request = $request->withHeader('Content-Type', 'application/json');
-        $request->getBody()->write(json_encode([
+        $request->getBody()->write(\json_encode([
             'game_id' => $uuid->toString(),
-            'direction' => 'up'
+            'direction' => 'up',
         ]));
         $request->getBody()->rewind();
 
@@ -56,16 +58,16 @@ class ManualHandlerTest extends TestCase
 
         $game = $this->getApplication()->root_repository->retrieve($uuid);
         $game->addEvent(...$events);
-        if (!empty($events)) {
+        if (! empty($events)) {
             $this->getApplication()->root_repository->persist($game);
         }
 
         $factory = new ServerRequestFactory();
         $request = $factory->createServerRequest('POST', '/manual');
         $request = $request->withHeader('Content-Type', 'application/json');
-        $request->getBody()->write(json_encode([
+        $request->getBody()->write(\json_encode([
             'game_id' => $uuid->toString(),
-            'direction' => 'up'
+            'direction' => 'up',
         ]));
         $request->getBody()->rewind();
 
@@ -90,11 +92,11 @@ class ManualHandlerTest extends TestCase
     private static function getJsonData(string $string): GameState
     {
         $parser = GameStateParserFactory::make();
-        $json = file_get_contents(__DIR__ . '/../../requests/' . $string . '.json');
+        $json = \file_get_contents(__DIR__ . '/../../requests/' . $string . '.json');
         if ($json === false) {
             throw new \RuntimeException('Failed to read JSON file');
         }
-        $data = json_decode($json, true);
+        $data = \json_decode($json, true);
         if ($data === null) {
             throw new \RuntimeException('Failed to decode JSON data');
         }

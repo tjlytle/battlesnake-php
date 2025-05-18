@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Projection;
 
 use BattleSnake\Domain\GameState;
@@ -57,7 +59,7 @@ class GameStatListenerTest extends TestCase
 
         self::assertNull($this->getApplication()->entity_manager->find(
             GameStat::class,
-            $aggregate_id
+            $aggregate_id,
         ));
     }
 
@@ -80,7 +82,7 @@ class GameStatListenerTest extends TestCase
 
         $stat = $this->getApplication()->entity_manager->find(
             GameStat::class,
-            $aggregate_id
+            $aggregate_id,
         );
 
         self::assertNotNull($stat);
@@ -102,23 +104,23 @@ class GameStatListenerTest extends TestCase
         yield 'loss' => [
             new End(self::getJsonData('four-player-large-end')),
             false,
-            10
+            10,
         ];
         yield 'win' => [
             new End(self::getJsonData('four-player-large-alternate-end')),
             true,
-            100
+            100,
         ];
     }
 
     private static function getJsonData(string $string): GameState
     {
         $parser = GameStateParserFactory::make();
-        $json = file_get_contents(__DIR__ . '/../../requests/' . $string . '.json');
+        $json = \file_get_contents(__DIR__ . '/../../requests/' . $string . '.json');
         if ($json === false) {
             throw new \RuntimeException('Failed to read JSON file');
         }
-        $data = json_decode($json, true);
+        $data = \json_decode($json, true);
         if ($data === null) {
             throw new \RuntimeException('Failed to decode JSON data');
         }

@@ -8,9 +8,9 @@ use BattleSnake\Domain\GameState;
 use BattleSnake\Domain\Parser\GameStateParser;
 use BattleSnake\Domain\Parser\GameStateParserFactory;
 use BattleSnake\Tests\Unit\Domain\Parser\Fixture\FourPlayerRoyalEnd;
-use BattleSnake\Tests\Unit\Domain\Parser\Fixture\GameStateFixture;
 use BattleSnake\Tests\Unit\Domain\Parser\Fixture\FourPlayerRoyalMove5;
 use BattleSnake\Tests\Unit\Domain\Parser\Fixture\FourPlayerRoyalStart;
+use BattleSnake\Tests\Unit\Domain\Parser\Fixture\GameStateFixture;
 use BattleSnake\Tests\Unit\Domain\Parser\Fixture\OfficialExample;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -29,7 +29,7 @@ final class GameStateParserTest extends TestCase
     #[DataProvider('provideJsonExamples')]
     public function parse_returns_expected_GameState(string $json, GameState $expectedGameState): void
     {
-        $state = $this->parser->parse(json_decode($json, true));
+        $state = $this->parser->parse(\json_decode($json, true));
         self::assertEquals($expectedGameState, $state);
     }
 

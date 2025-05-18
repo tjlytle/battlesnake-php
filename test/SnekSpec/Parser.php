@@ -1,19 +1,19 @@
 <?php
 
-namespace BattleSnake\Tests\SnekSpec;
+declare(strict_types=1);
 
-use PHPUnit\Framework\Assert;
+namespace BattleSnake\Tests\SnekSpec;
 
 class Parser
 {
     public function parse(string $board): array
     {
         // coords start from the bottom left corner
-        $lines = explode("\n", $board);
-        $lines = array_reverse($lines);
+        $lines = \explode("\n", $board);
+        $lines = \array_reverse($lines);
 
-        $height = count($lines);
-        $width = strlen($lines[0]);
+        $height = \count($lines);
+        $width = \strlen($lines[0]);
 
         $i = -1;
 
@@ -22,7 +22,7 @@ class Parser
         $snake_segments = [];
 
         foreach ($lines as $y => $line) {
-            foreach (str_split($line) as $x => $char) {
+            foreach (\str_split($line) as $x => $char) {
                 $i++;
                 if ($x === $width) {
                     if ($char !== "\n") {
@@ -47,11 +47,11 @@ class Parser
                     continue;
                 }
 
-                if (!preg_match('#[A-Ya-y]#', $char)) {
+                if (! \preg_match('#[A-Ya-y]#', $char)) {
                     throw new \UnexpectedValueException("Mock has unexpected character $char at $i");
                 }
 
-                if (!isset($snake_segments[$char])) {
+                if (! isset($snake_segments[$char])) {
                     $snake_segments[$char] = [];
                 }
 
@@ -60,24 +60,24 @@ class Parser
         }
 
         // find heads as having only one coordinate and not having a matching body
-        $heads = array_filter($snake_segments, function(array $coords, string $key) use ($snake_segments): bool  {
-            return count($coords) === 1 && !isset($snake_segments[strtolower($key)]);
-        }, ARRAY_FILTER_USE_BOTH);
+        $heads = \array_filter($snake_segments, function (array $coords, string $key) use ($snake_segments): bool {
+            return \count($coords) === 1 && ! isset($snake_segments[\strtolower($key)]);
+        }, \ARRAY_FILTER_USE_BOTH);
 
         // sort heads by order to handle two segment snakes
-        ksort($heads);
-        $heads = array_filter($heads, fn(string $key): bool => !isset($heads[chr(ord($key) - 1)]), ARRAY_FILTER_USE_KEY);
+        \ksort($heads);
+        $heads = \array_filter($heads, fn(string $key): bool => ! isset($heads[\chr(\ord($key) - 1)]), \ARRAY_FILTER_USE_KEY);
 
         $snakes = [];
         foreach ($heads as $head => $head_coords) {
-            $snake = $this->traverseSnakeBody((string) $head, $snake_segments);
+            $snake = $this->traverseSnakeBody((string)$head, $snake_segments);
 
             $snakes[] = [
-                'id' => strtolower($head),
-                'name' => strtolower($head),
+                'id' => \strtolower($head),
+                'name' => \strtolower($head),
                 'head' => $head_coords[0],
                 'body' => $snake,
-                'length' => count($snake),
+                'length' => \count($snake),
                 'health' => 90,
                 'shout' => 'boo!',
                 'squad' => '',
@@ -102,7 +102,7 @@ class Parser
                 'hazards' => $hazards,
                 'snakes' => $snakes,
             ],
-            'you' => $snakes[0]
+            'you' => $snakes[0],
         ];
     }
 
@@ -111,29 +111,31 @@ class Parser
         $coords = [];
         $coords[] = $snake_segments[$head][0];
 
-        $tail = chr(ord($head) + 1);
+        $tail = \chr(\ord($head) + 1);
 
-        if (!isset($snake_segments[$tail])) {
+        if (! isset($snake_segments[$tail])) {
             // single segment snake
             return $coords;
         }
 
-        $body = strtolower($tail);
+        $body = \strtolower($tail);
 
-        if(!isset($snake_segments[$body])) {
+        if (! isset($snake_segments[$body])) {
             // two segment snake
             $coords[] = $snake_segments[$tail][0];
             return $coords;
         }
 
-        $coords = array_merge($coords, $snake_segments[$body], $snake_segments[$tail]);
+        $coords = \array_merge($coords, $snake_segments[$body], $snake_segments[$tail]);
 
-        $length = count($coords);
+        $length = \count($coords);
         for ($i = 0; $i < $length; $i++) {
             for ($j = 0; $j < $length; $j++) {
-                if ($i === $j) continue;
-                $dx = abs($coords[$i]['x'] - $coords[$j]['x']);
-                $dy = abs($coords[$i]['y'] - $coords[$j]['y']);
+                if ($i === $j) {
+                    continue;
+                }
+                $dx = \abs($coords[$i]['x'] - $coords[$j]['x']);
+                $dy = \abs($coords[$i]['y'] - $coords[$j]['y']);
                 if ($dx + $dy === 1) {
                     $adj[$i][] = $j;
                 }
@@ -145,7 +147,7 @@ class Parser
         $visited[0] = true;
         $path = [0];
 
-        $this->findPaths(0, $length-1, $length, $adj, $visited, $path, $paths);
+        $this->findPaths(0, $length - 1, $length, $adj, $visited, $path, $paths);
 
         if (empty($paths)) {
             throw new \Exception("No path from head to tail found.");
@@ -168,26 +170,26 @@ class Parser
         array $adj,
         array &$visited,
         array &$path,
-        array &$paths
+        array &$paths,
     ) {
         if ($current === $tailIndex) {
             // only record if we've hit every segment exactly once
-            if (count($path) === $N) {
+            if (\count($path) === $N) {
                 $paths[] = $path;
             }
             return;
         }
 
         foreach ($adj[$current] as $nbr) {
-            if (!isset($visited[$nbr])) {
+            if (! isset($visited[$nbr])) {
                 $visited[$nbr] = true;
                 $path[] = $nbr;
 
                 $this->findPaths($nbr, $tailIndex, $N, $adj, $visited, $path, $paths);
-                if (count($paths) > 0) {
+                if (\count($paths) > 0) {
                     return;
                 }
-                array_pop($path);
+                \array_pop($path);
                 unset($visited[$nbr]);
             }
         }

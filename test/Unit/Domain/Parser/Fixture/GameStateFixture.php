@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Domain\Parser\Fixture;
 
 use BattleSnake\Domain\Battlesnake;

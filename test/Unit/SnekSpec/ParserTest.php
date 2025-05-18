@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\SnekSpec;
 
 use BattleSnake\Tests\SnekSpec\Parser as SUT;
@@ -112,8 +114,8 @@ class ParserTest extends TestCase
         foreach ($result['you']['body'] as $segment) {
             if ($last !== null) {
                 // check that the segments are adjacent
-                $dx = abs($segment['x'] - $last['x']);
-                $dy = abs($segment['y'] - $last['y']);
+                $dx = \abs($segment['x'] - $last['x']);
+                $dy = \abs($segment['y'] - $last['y']);
                 self::assertTrue($dx + $dy === 1, "Segments are not adjacent: {$last['x']}, {$last['y']} to {$segment['x']}, {$segment['y']}");
             }
             $last = $segment;
@@ -131,11 +133,11 @@ class ParserTest extends TestCase
         ];
 
         foreach ($examples as $label => $board) {
-            $json = file_get_contents(__DIR__ . "/json/{$label}.json");
+            $json = \file_get_contents(__DIR__ . "/json/{$label}.json");
             if ($json === false) {
                 throw new \RuntimeException("Failed to read JSON file for {$label}");
             }
-            $expected = json_decode($json, true);
+            $expected = \json_decode($json, true);
             yield $label => [
                 $board,
                 $expected,
@@ -143,4 +145,3 @@ class ParserTest extends TestCase
         }
     }
 }
-

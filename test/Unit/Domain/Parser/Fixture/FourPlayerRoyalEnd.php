@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Domain\Parser\Fixture;
 
 use BattleSnake\Domain\Battlesnake;
@@ -16,7 +18,7 @@ use BattleSnake\Domain\Setting\SquadSettings;
 
 class FourPlayerRoyalEnd extends JsonFixture
 {
-    #[\Override] 
+    #[\Override]
     public function getGame(): Game
     {
         return new Game(
@@ -24,7 +26,7 @@ class FourPlayerRoyalEnd extends JsonFixture
             ruleset: $this->getRuleset(),
             map: 'royale',
             source: 'custom',
-            timeout: 500
+            timeout: 500,
         );
     }
 
@@ -116,7 +118,7 @@ class FourPlayerRoyalEnd extends JsonFixture
                 new Coordinate(18, 17),
                 new Coordinate(18, 18),
             ),
-            snakes: $this->getSnakes()
+            snakes: $this->getSnakes(),
         );
     }
 
@@ -179,7 +181,7 @@ class FourPlayerRoyalEnd extends JsonFixture
                     new Coordinate(11, 11),
                     new Coordinate(10, 11),
                     new Coordinate(10, 11),
-                )
+                ),
             ),
         );
     }
@@ -189,7 +191,7 @@ class FourPlayerRoyalEnd extends JsonFixture
         return new Ruleset(
             name: 'standard',
             version: 'v1.2.3',
-            settings: $this->getRulesetSettings()
+            settings: $this->getRulesetSettings(),
         );
     }
 
@@ -200,20 +202,20 @@ class FourPlayerRoyalEnd extends JsonFixture
             minimumFood: 1,
             hazardDamagePerTurn: 14,
             royale: new RoyaleSettings(
-                shrinkEveryNTurns: 25
+                shrinkEveryNTurns: 25,
             ),
             squad: new SquadSettings(
                 allowBodyCollisions: false,
                 sharedElimination: false,
                 sharedHealth: false,
-                sharedLength: false
-            )
+                sharedLength: false,
+            ),
         );
     }
 
     #[\Override] public function getJson(): string
     {
-        return file_get_contents(__DIR__ .  '/../../../../requests/four-player-large-end.json');
+        return \file_get_contents(__DIR__ . '/../../../../requests/four-player-large-end.json');
     }
 
     #[\Override] public function getTurn(): int

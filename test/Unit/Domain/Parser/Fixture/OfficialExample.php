@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Domain\Parser\Fixture;
 
 use BattleSnake\Domain\Battlesnake;
@@ -10,9 +12,7 @@ use BattleSnake\Domain\CoordinateCollection;
 use BattleSnake\Domain\Customizations;
 use BattleSnake\Domain\Game;
 use BattleSnake\Domain\Ruleset;
-use BattleSnake\Domain\Setting\RoyaleSettings;
 use BattleSnake\Domain\Setting\RulesetSettings;
-use BattleSnake\Domain\Setting\SquadSettings;
 
 class OfficialExample extends JsonFixture
 {
@@ -24,7 +24,7 @@ class OfficialExample extends JsonFixture
             ruleset: $this->getRuleset(),
             map: 'standard',
             source: 'league',
-            timeout: 500
+            timeout: 500,
         );
     }
 
@@ -41,7 +41,7 @@ class OfficialExample extends JsonFixture
             hazards: new CoordinateCollection(
                 new Coordinate(3, 2),
             ),
-            snakes: $this->getSnakes()
+            snakes: $this->getSnakes(),
         );
     }
 
@@ -88,7 +88,7 @@ class OfficialExample extends JsonFixture
                     new Coordinate(5, 3),
                     new Coordinate(6, 3),
                     new Coordinate(6, 2),
-                )
+                ),
             ),
         );
     }
@@ -98,7 +98,7 @@ class OfficialExample extends JsonFixture
         return new Ruleset(
             name: 'standard',
             version: 'v1.1.15',
-            settings: $this->getRulesetSettings()
+            settings: $this->getRulesetSettings(),
         );
     }
 
@@ -113,7 +113,7 @@ class OfficialExample extends JsonFixture
 
     #[\Override] public function getJson(): string
     {
-        return file_get_contents(__DIR__ .  '/../../../../requests/official-example.json');
+        return \file_get_contents(__DIR__ . '/../../../../requests/official-example.json');
     }
 
     #[\Override] public function getTurn(): int

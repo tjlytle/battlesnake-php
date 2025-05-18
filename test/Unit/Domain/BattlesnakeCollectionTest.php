@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Domain;
 
 use BattleSnake\Domain\Battlesnake;
@@ -21,7 +23,7 @@ class BattlesnakeCollectionTest extends TestCase
 
         foreach ($collection as $index => $snake) {
             $this->assertInstanceOf(Battlesnake::class, $snake);
-            $this->assertSame(match($index) {
+            $this->assertSame(match ($index) {
                 0 => $snake1,
                 1 => $snake2,
                 default => throw new \Exception('Unexpected index'),

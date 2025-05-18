@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Strategy;
 
 use BattleSnake\Analyzer\Move;
@@ -59,7 +61,6 @@ class NudgeableTest extends TestCase
         );
     }
 
-
     #[Test]
     public function without_nudge_use_fallback_strategy(): void
     {
@@ -93,7 +94,7 @@ class NudgeableTest extends TestCase
                 new Move(Direction::DOWN, new ClassificationCollection(Classification::END)),
                 new Move(Direction::LEFT, new ClassificationCollection(Classification::SAFE)),
                 new Move(Direction::RIGHT, new ClassificationCollection(Classification::SAFE)),
-            )
+            ),
         );
 
         $result = ($this->sut)($game_state);
@@ -118,7 +119,7 @@ class NudgeableTest extends TestCase
                 new Move(Direction::DOWN, new ClassificationCollection(Classification::SAFE)),
                 new Move(Direction::LEFT, new ClassificationCollection(Classification::SAFE)),
                 new Move(Direction::RIGHT, new ClassificationCollection(Classification::SAFE)),
-            )
+            ),
         );
 
         $result = ($this->sut)($game_state);
@@ -134,12 +135,12 @@ class NudgeableTest extends TestCase
                 ruleset: new Ruleset(
                     name: 'standard',
                     version: 'v1.0.0',
-                    settings:  new RulesetSettings(
+                    settings: new RulesetSettings(
                         foodSpawnChance: 0,
                         minimumFood: 0,
                         hazardDamagePerTurn: 0,
-                    )
-                )
+                    ),
+                ),
             ),
             turn: 1,
             board: new \BattleSnake\Domain\Board(
@@ -150,7 +151,7 @@ class NudgeableTest extends TestCase
                 id: 'snake-id',
                 name: 'snake-name',
                 health: 100,
-            )
+            ),
         );
     }
 
@@ -159,7 +160,7 @@ class NudgeableTest extends TestCase
         return Argument::that(
             function (UuidInterface $uuid) use ($id) {
                 return $uuid->toString() === $id->toString();
-            }
+            },
         );
     }
 }

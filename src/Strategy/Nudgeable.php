@@ -40,5 +40,7 @@ class Nudgeable implements Strategy
             }
             return ($this->fallbackStrategy)($game_state);
         }
+
+        return ($this->fallbackStrategy)($game_state);
     }
 }

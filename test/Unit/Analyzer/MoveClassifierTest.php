@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Analyzer;
 
 use BattleSnake\Analyzer\Move;
@@ -53,7 +55,7 @@ class MoveClassifierTest extends TestCase
                 new Move(Direction::LEFT, new ClassificationCollection(Classification::SAFE)),
                 new Move(Direction::DOWN, new ClassificationCollection(Classification::END)),
                 new Move(Direction::RIGHT, new ClassificationCollection(Classification::FOOD, Classification::DANGER)),
-            )
+            ),
         ];
 
         $state = <<<EOD
@@ -77,7 +79,7 @@ class MoveClassifierTest extends TestCase
                 new Move(Direction::LEFT, new ClassificationCollection(Classification::END)),
                 new Move(Direction::DOWN, new ClassificationCollection(Classification::HAZARD)),
                 new Move(Direction::RIGHT, new ClassificationCollection(Classification::FOOD, Classification::DANGER)),
-            )
+            ),
         ];
 
         $state = <<<EOD
@@ -101,9 +103,8 @@ class MoveClassifierTest extends TestCase
                 new Move(Direction::LEFT, new ClassificationCollection(Classification::SAFE)),
                 new Move(Direction::DOWN, new ClassificationCollection(Classification::END)),
                 new Move(Direction::RIGHT, new ClassificationCollection(Classification::FOOD, Classification::DANGER)),
-            )
+            ),
         ];
-
 
         $state = <<<EOD
             -----------
@@ -126,7 +127,7 @@ class MoveClassifierTest extends TestCase
                 new Move(Direction::LEFT, new ClassificationCollection(Classification::END)),
                 new Move(Direction::DOWN, new ClassificationCollection(Classification::SAFE)),
                 new Move(Direction::RIGHT, new ClassificationCollection(Classification::SAFE)),
-            )
+            ),
         ];
 
         $state = <<<EOD
@@ -150,8 +151,7 @@ class MoveClassifierTest extends TestCase
                 new Move(Direction::LEFT, new ClassificationCollection(Classification::SAFE)),
                 new Move(Direction::DOWN, new ClassificationCollection(Classification::SAFE)),
                 new Move(Direction::RIGHT, new ClassificationCollection(Classification::SAFE)),
-            )
+            ),
         ];
-
     }
 }

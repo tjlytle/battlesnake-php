@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Domain\Parser\Fixture;
 
 use BattleSnake\Domain\Battlesnake;
@@ -24,7 +26,7 @@ class FourPlayerRoyalMove5 extends JsonFixture
             ruleset: $this->getRuleset(),
             map: 'royale',
             source: 'custom',
-            timeout: 500
+            timeout: 500,
         );
     }
 
@@ -41,7 +43,7 @@ class FourPlayerRoyalMove5 extends JsonFixture
                 new Coordinate(9, 12),
             ),
             hazards: new CoordinateCollection(),
-            snakes: $this->getSnakes()
+            snakes: $this->getSnakes(),
         );
     }
 
@@ -87,7 +89,7 @@ class FourPlayerRoyalMove5 extends JsonFixture
                     new Coordinate(8, 17),
                     new Coordinate(8, 18),
                     new Coordinate(9, 18),
-                )
+                ),
             ),
             $this->getSnake(
                 id: 'gs_qRm6pdxvhbpPPj7wfSffxD6T',
@@ -104,7 +106,7 @@ class FourPlayerRoyalMove5 extends JsonFixture
                 body: new CoordinateCollection(
                     new Coordinate(8, 1),
                     new Coordinate(8, 2),
-                )
+                ),
             ),
             $this->getSnake(
                 id: 'gs_DcdCRQGcGHFCd6FD88gkGxkd',
@@ -122,8 +124,7 @@ class FourPlayerRoyalMove5 extends JsonFixture
                     new Coordinate(17, 8),
                     new Coordinate(16, 8),
                 ),
-            )
-
+            ),
         );
     }
 
@@ -132,7 +133,7 @@ class FourPlayerRoyalMove5 extends JsonFixture
         return new Ruleset(
             name: 'standard',
             version: 'v1.2.3',
-            settings: $this->getRulesetSettings()
+            settings: $this->getRulesetSettings(),
         );
     }
 
@@ -143,20 +144,20 @@ class FourPlayerRoyalMove5 extends JsonFixture
             minimumFood: 1,
             hazardDamagePerTurn: 14,
             royale: new RoyaleSettings(
-                shrinkEveryNTurns: 25
+                shrinkEveryNTurns: 25,
             ),
             squad: new SquadSettings(
                 allowBodyCollisions: false,
                 sharedElimination: false,
                 sharedHealth: false,
-                sharedLength: false
-            )
+                sharedLength: false,
+            ),
         );
     }
 
     #[\Override] public function getJson(): string
     {
-        return file_get_contents(__DIR__ .  '/../../../../requests/four-player-large-move5.json');
+        return \file_get_contents(__DIR__ . '/../../../../requests/four-player-large-move5.json');
     }
 
     #[\Override] public function getTurn(): int

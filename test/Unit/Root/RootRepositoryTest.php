@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Root;
 
 use BattleSnake\Domain\GameState;
@@ -73,7 +75,7 @@ class RootRepositoryTest extends TestCase
 
         $call_order = [];
 
-        $this->dispatcher->dispatch(Argument::cetera())->will(function($args) use (&$call_order, $aggregate_id) {
+        $this->dispatcher->dispatch(Argument::cetera())->will(function ($args) use (&$call_order, $aggregate_id) {
             TestCase::assertInstanceOf(Payload::class, $args[0]);
             TestCase::assertSame($aggregate_id, $args[0]->uuid);
             $call_order[] = $args[0]->event;
@@ -117,7 +119,7 @@ class RootRepositoryTest extends TestCase
         $game->addEvent($events[5], $events[6], $events[7]);
 
         $this->event_repository->persist(Argument::cetera())
-            ->will(function($args) use ($events, $aggregate_id) {
+            ->will(function ($args) use ($events, $aggregate_id) {
                 TestCase::assertCount(3, $args);
 
                 $version = 5;
@@ -129,7 +131,6 @@ class RootRepositoryTest extends TestCase
                     TestCase::assertSame($events[$version - 1], $payload->event);
                     TestCase::assertSame($aggregate_id, $payload->uuid);
                 }
-
             })->shouldBeCalled();
 
         $this->sut->persist($game);
@@ -175,11 +176,11 @@ class RootRepositoryTest extends TestCase
     private static function getJsonData(string $string): GameState
     {
         $parser = GameStateParserFactory::make();
-        $json = file_get_contents(__DIR__ . '/../../requests/' . $string . '.json');
+        $json = \file_get_contents(__DIR__ . '/../../requests/' . $string . '.json');
         if ($json === false) {
             throw new \RuntimeException('Failed to read JSON file');
         }
-        $data = json_decode($json, true);
+        $data = \json_decode($json, true);
         if ($data === null) {
             throw new \RuntimeException('Failed to decode JSON data');
         }

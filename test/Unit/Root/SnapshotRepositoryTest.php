@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Root;
 
 use BattleSnake\Domain\GameState;
@@ -29,6 +31,8 @@ class SnapshotRepositoryTest extends TestCase
 
     /** @var ObjectProphecy<RootRepository> */
     private ObjectProphecy $root_repository;
+    private SUT $sut;
+
     protected function setUp(): void
     {
         $this->event_repository = $this->prophesize(EventRepository::class);
@@ -50,7 +54,7 @@ class SnapshotRepositoryTest extends TestCase
         $stmt = $this->getApplication()->connection->prepare('INSERT INTO game_snapshot (aggregate_id, version, serialized) VALUES (:aggregate_id, :version, :serialized)');
         $stmt->bindValue('aggregate_id', $aggregate_id->toString());
         $stmt->bindValue('version', 1);
-        $stmt->bindValue('serialized', serialize($game));
+        $stmt->bindValue('serialized', \serialize($game));
         $stmt->executeStatement();
 
         $game->loadEvents(
@@ -68,7 +72,7 @@ class SnapshotRepositoryTest extends TestCase
 
         $connection = $this->getApplication()->connection;
         $stmt = $connection->prepare('SELECT * FROM game_snapshot WHERE aggregate_id = :aggregate_id');
-        $stmt->bindValue(':aggregate_id', $aggregate_id, );
+        $stmt->bindValue(':aggregate_id', $aggregate_id,);
         $rows = $stmt->executeQuery()->fetchAllAssociative();
 
         self::assertCount(1, $rows);
@@ -76,7 +80,7 @@ class SnapshotRepositoryTest extends TestCase
         self::assertEquals($game->getVersion(), $rows[0]['version']);
         $serialized = $rows[0]['serialized'];
 
-        self::assertEquals($game, unserialize($serialized));
+        self::assertEquals($game, \unserialize($serialized));
     }
 
     #[Test]
@@ -99,7 +103,7 @@ class SnapshotRepositoryTest extends TestCase
 
         $connection = $this->getApplication()->connection;
         $stmt = $connection->prepare('SELECT * FROM game_snapshot WHERE aggregate_id = :aggregate_id');
-        $stmt->bindValue(':aggregate_id', $aggregate_id, );
+        $stmt->bindValue(':aggregate_id', $aggregate_id,);
         $rows = $stmt->executeQuery()->fetchAllAssociative();
 
         self::assertCount(1, $rows);
@@ -107,7 +111,7 @@ class SnapshotRepositoryTest extends TestCase
         self::assertEquals($game->getVersion(), $rows[0]['version']);
         $serialized = $rows[0]['serialized'];
 
-        self::assertEquals($game, unserialize($serialized));
+        self::assertEquals($game, \unserialize($serialized));
     }
 
     #[Test]
@@ -147,12 +151,11 @@ class SnapshotRepositoryTest extends TestCase
                 new Payload($aggregate_id, $game->getVersion() + 4, new End(self::getJsonData('four-player-large-end')), new \DateTimeImmutable()),
             ]);
 
-
         $future_game = $this->sut->retrieveFromSnapshot($aggregate_id);
 
         self::assertTrue($future_game->isStarted());
         self::assertTrue($future_game->isFinished());
-        self::assertSame(12 , $future_game->getVersion());
+        self::assertSame(12, $future_game->getVersion());
         self::assertSame(9, $future_game->getTurn());
 
         $this->sut->retrieveFromSnapshot($aggregate_id);
@@ -161,11 +164,11 @@ class SnapshotRepositoryTest extends TestCase
     private static function getJsonData(string $string): GameState
     {
         $parser = GameStateParserFactory::make();
-        $json = file_get_contents(__DIR__ . '/../../requests/' . $string . '.json');
+        $json = \file_get_contents(__DIR__ . '/../../requests/' . $string . '.json');
         if ($json === false) {
             throw new \RuntimeException('Failed to read JSON file');
         }
-        $data = json_decode($json, true);
+        $data = \json_decode($json, true);
         if ($data === null) {
             throw new \RuntimeException('Failed to decode JSON data');
         }

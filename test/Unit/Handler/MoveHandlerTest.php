@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Handler;
 
-use BattleSnake\ApplicationFactory;
 use BattleSnake\Tests\Unit\ApplicationProvider;
 use Laminas\Diactoros\ServerRequestFactory;
 use League\OpenAPIValidation\PSR7\OperationAddress;
@@ -25,7 +26,7 @@ class MoveHandlerTest extends TestCase
         $request->getBody()->write($json);
         $request->getBody()->rewind();
 
-        $response  = $this->getApplication()->getQueueHandler()->handle($request);
+        $response = $this->getApplication()->getQueueHandler()->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('application/json', $response->getHeaderLine('Content-Type'));
@@ -47,7 +48,7 @@ class MoveHandlerTest extends TestCase
         ];
 
         foreach ($example_requests as $label) {
-            $json = file_get_contents(__DIR__ . "/../../requests/{$label}.json");
+            $json = \file_get_contents(__DIR__ . "/../../requests/{$label}.json");
             if ($json === false) {
                 throw new \RuntimeException("Failed to read JSON file for {$label}");
             }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Analyzer;
 
 use BattleSnake\Analyzer\SafeMove as SUT;
@@ -59,11 +61,11 @@ class SafeMoveTest extends TestCase
 
         $parser = GameStateParserFactory::make();
         foreach ($example_requests as $label => $expected) {
-            $json = file_get_contents(__DIR__ . "/../../requests/{$label}.json");
+            $json = \file_get_contents(__DIR__ . "/../../requests/{$label}.json");
             if ($json === false) {
                 throw new \RuntimeException("Failed to read JSON file for {$label}");
             }
-            $state = $parser->parse(json_decode($json, true));
+            $state = $parser->parse(\json_decode($json, true));
             yield $label => [
                 $state,
                 $expected,

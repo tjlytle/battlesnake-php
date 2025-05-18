@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Eventsource;
 
 use BattleSnake\Domain\GameState;
 use BattleSnake\Domain\Parser\GameStateParser;
 use BattleSnake\Domain\Parser\GameStateParserFactory;
-use BattleSnake\Eventsource\Payload;
 use BattleSnake\Eventsource\EventRepository as SUT;
+use BattleSnake\Eventsource\Payload;
 use BattleSnake\Eventsource\VersionCollision;
 use BattleSnake\Tests\SnekSpec\Parser;
 use BattleSnake\Tests\Unit\ApplicationProvider;
@@ -21,6 +23,7 @@ class EventRepositoryTest extends TestCase
     use ApplicationProvider;
 
     private GameStateParser $state_parser;
+    private SUT $sut;
     private Parser $test_parser;
 
     protected function setUp(): void
@@ -30,7 +33,7 @@ class EventRepositoryTest extends TestCase
 
         $this->sut = new SUT(
             $this->getApplication()->connection,
-            new SerdeCommon()
+            new SerdeCommon(),
         );
     }
 
@@ -71,9 +74,9 @@ class EventRepositoryTest extends TestCase
         $aggregate_id = Uuid::uuid4();
         $now = new \DateTimeImmutable();
         $this->sut->persist(
-            new Payload($aggregate_id, 1,  $event1, $now),
-            new Payload($aggregate_id, 2,  $event2, $now),
-            new Payload($aggregate_id, 3,  $event3, $now),
+            new Payload($aggregate_id, 1, $event1, $now),
+            new Payload($aggregate_id, 2, $event2, $now),
+            new Payload($aggregate_id, 3, $event3, $now),
         );
 
         $events = $this->sut->get($aggregate_id, 2);
@@ -119,13 +122,13 @@ class EventRepositoryTest extends TestCase
         $other_aggregate_id = Uuid::uuid4();
         $now = new \DateTimeImmutable();
         $this->sut->persist(
-            new Payload($aggregate_id, 1,  $event1, $now),
-            new Payload($aggregate_id, 2,  $event2, $now),
-            new Payload($other_aggregate_id, 1,  $event3, $now),
+            new Payload($aggregate_id, 1, $event1, $now),
+            new Payload($aggregate_id, 2, $event2, $now),
+            new Payload($other_aggregate_id, 1, $event3, $now),
         );
 
         $events = $this->sut->getAll();
-        $events = iterator_to_array($events);
+        $events = \iterator_to_array($events);
 
         $connection = $this->getApplication()->connection;
         $stmt = $connection->prepare('SELECT count(*) FROM game_events');
@@ -173,18 +176,18 @@ class EventRepositoryTest extends TestCase
         $aggregate_id = Uuid::uuid4();
         $now = new \DateTimeImmutable();
         $this->sut->persist(
-            new Payload($aggregate_id, 1,  $event1, $now),
-            new Payload($aggregate_id, 2,  $event2, $now),
-            new Payload($aggregate_id, 3,  $event3, $now),
+            new Payload($aggregate_id, 1, $event1, $now),
+            new Payload($aggregate_id, 2, $event2, $now),
+            new Payload($aggregate_id, 3, $event3, $now),
         );
 
         // make sure we don't fetch other events
         $other_aggregate_id = Uuid::uuid4();
         $now = new \DateTimeImmutable();
         $this->sut->persist(
-            new Payload($other_aggregate_id, 1,  $event1, $now),
-            new Payload($other_aggregate_id, 2,  $event2, $now),
-            new Payload($other_aggregate_id, 3,  $event3, $now),
+            new Payload($other_aggregate_id, 1, $event1, $now),
+            new Payload($other_aggregate_id, 2, $event2, $now),
+            new Payload($other_aggregate_id, 3, $event3, $now),
         );
 
         // puts rows in database
@@ -242,9 +245,9 @@ class EventRepositoryTest extends TestCase
 
         try {
             $this->sut->persist(
-                new Payload($aggregate_id, 1,  $event1, $now),
-                new Payload($aggregate_id, 2,  $event2, $now),
-                new Payload($aggregate_id, 2,  $event2b, $now),
+                new Payload($aggregate_id, 1, $event1, $now),
+                new Payload($aggregate_id, 2, $event2, $now),
+                new Payload($aggregate_id, 2, $event2b, $now),
             );
         } catch (VersionCollision $e) {
             $this->expectNotToPerformAssertions();
@@ -271,8 +274,7 @@ class EventRepositoryTest extends TestCase
             EOD;
 
         return $this->state_parser->parse(
-            $this->test_parser->parse($state)
+            $this->test_parser->parse($state),
         );
     }
-
 }

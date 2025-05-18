@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Strategy;
 
 use BattleSnake\Domain\Direction;
@@ -26,7 +28,7 @@ class RandomTest extends TestCase
     {
         $example_requests = [
             'official-example' => [
-                Direction::UP
+                Direction::UP,
             ],
             'four-player-large-move1' => [
                 Direction::UP,
@@ -59,11 +61,11 @@ class RandomTest extends TestCase
 
         $parser = GameStateParserFactory::make();
         foreach ($example_requests as $label => $expected) {
-            $json = file_get_contents(__DIR__ . "/../../requests/{$label}.json");
+            $json = \file_get_contents(__DIR__ . "/../../requests/{$label}.json");
             if ($json === false) {
                 throw new \RuntimeException("Failed to read JSON file for {$label}");
             }
-            $state = $parser->parse(json_decode($json, true));
+            $state = $parser->parse(\json_decode($json, true));
             yield $label => [
                 $state,
                 ...$expected,

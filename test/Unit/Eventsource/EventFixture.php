@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BattleSnake\Tests\Unit\Eventsource;
 
 use BattleSnake\Domain\GameState;
