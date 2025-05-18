@@ -1,0 +1,21 @@
+{
+    # Global options
+    admin off
+}
+
+:80 {
+    # Set the root directory for the site
+    root * /var/www/html/public
+
+    # Enable PHP-FPM processing
+    php_fastcgi php:9000
+
+    # Enable file server for static files
+    file_server
+
+    # Log requests to stdout
+    log {
+        output stdout
+        format console
+    }
+}

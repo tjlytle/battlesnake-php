@@ -1,12 +1,10 @@
 version: '3.8'
 
 services:
-  app:
+  php:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "8088:8080"
     volumes:
       - .:/var/www/html
     environment:
@@ -21,6 +19,20 @@ services:
       - battlesnake-network
     depends_on:
       - mysql
+
+  caddy:
+    image: caddy:2
+    ports:
+      - "8088:80"
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile
+      - .:/var/www/html
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - battlesnake-network
+    depends_on:
+      - php
 
   mysql:
     image: mysql:8.0
@@ -43,3 +55,5 @@ networks:
 
 volumes:
   mysql-data:
+  caddy_data:
+  caddy_config:

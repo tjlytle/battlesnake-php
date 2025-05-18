@@ -1,4 +1,4 @@
-FROM php:8.4-cli
+FROM php:8.4-fpm
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
@@ -31,8 +31,7 @@ COPY . /var/www/html/
 # Install dependencies
 RUN composer install --no-interaction --no-scripts
 
-# Expose port
-EXPOSE 8080
+# Expose port for PHP-FPM
+EXPOSE 9000
 
-# Start PHP development server
-CMD ["php", "-S", "0.0.0.0:8080", "-t", "public"] 
+# PHP-FPM starts automatically, no need for CMD
