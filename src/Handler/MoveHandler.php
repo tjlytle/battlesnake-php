@@ -6,9 +6,8 @@ namespace BattleSnake\Handler;
 
 use BattleSnake\Domain\Parser\GameStateParserFactory;
 use BattleSnake\Event\Turn;
-use BattleSnake\Root\RootRepository;
 use BattleSnake\Root\SnapshotRepository;
-use BattleSnake\Strategy\Random;
+use BattleSnake\Strategy\Strategy;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -19,6 +18,7 @@ class MoveHandler extends AbstractHandler
     public function __construct(
         protected readonly ResponseFactoryInterface $response_factory,
         protected readonly SnapshotRepository $repository,
+        protected readonly Strategy $strategy,
     )
     {
     }
@@ -38,9 +38,7 @@ class MoveHandler extends AbstractHandler
             $this->repository->snapshot($root);
         }
 
-        $strategy = new Random();
-
-        $direction = $strategy($state);
+        $direction = ($this->strategy)($state);
 
         return $this->createJsonResponse([
             'move' => $direction->value,
