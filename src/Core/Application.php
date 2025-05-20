@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace BattleSnake\Core;
 
-use BattleSnake\Analyzer\MoveClassifier;
 use BattleSnake\Eventsource\EventRepository;
 use BattleSnake\Eventsource\Payload;
 use BattleSnake\Handler\EndHandler;
 use BattleSnake\Handler\InfoHandler;
-use BattleSnake\Handler\ManualHandler;
 use BattleSnake\Handler\MoveHandler;
 use BattleSnake\Handler\NotFoundHandler;
 use BattleSnake\Handler\StartHandler;
@@ -18,7 +16,6 @@ use BattleSnake\Middleware\JsonParser;
 use BattleSnake\Projection\GameStatListener;
 use BattleSnake\Root\RootRepository;
 use BattleSnake\Root\SnapshotRepository;
-use BattleSnake\Strategy\Nudgeable;
 use BattleSnake\Strategy\Random;
 use Crell\Serde\SerdeCommon;
 use Crell\Tukio\Dispatcher;
@@ -125,24 +122,12 @@ class Application implements ListenerProviderInterface
                     $this->root_repository,
                     $this->connection,
                 ),
-                new Nudgeable(
-                    $this->root_repository,
-                    new Random(),
-                    new MoveClassifier(),
-                ),
+                new Random(),
             ),
         );
         $api_dispatch->addRoute(
             '/end',
             new EndHandler(
-                $this->response_factory,
-                $this->root_repository,
-            ),
-        );
-
-        $api_dispatch->addRoute(
-            '/manual',
-            new ManualHandler(
                 $this->response_factory,
                 $this->root_repository,
             ),

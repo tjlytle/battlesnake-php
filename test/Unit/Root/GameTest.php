@@ -4,17 +4,13 @@ declare(strict_types=1);
 
 namespace BattleSnake\Tests\Unit\Root;
 
-use BattleSnake\Command\Nudge;
-use BattleSnake\Domain\Direction;
 use BattleSnake\Domain\GameState;
 use BattleSnake\Domain\Parser\GameStateParserFactory;
 use BattleSnake\Event\End;
-use BattleSnake\Event\Nudge as NudgeEvent;
 use BattleSnake\Event\Start;
 use BattleSnake\Event\Turn;
 use BattleSnake\Eventsource\Event;
 use BattleSnake\Root\Game as SUT;
-use BattleSnake\Root\InvalidState;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -35,79 +31,8 @@ class GameTest extends TestCase
         self::assertSame(\count($events), $game->getVersion());
     }
 
-    #[Test]
-    public function process_allows_nudge_command_when_game_is_started(): void
-    {
-        $uuid = Uuid::uuid4();
-        $game = new SUT($uuid);
 
-        $game->loadEvents(
-            new Start(self::getJsonData('four-player-large-start')),
-            new Turn(self::getJsonData('four-player-large-move1')),
-            new Turn(self::getJsonData('four-player-large-move2')),
-            new Turn(self::getJsonData('four-player-large-move3')),
-            new Turn(self::getJsonData('four-player-large-move4')),
-        );
 
-        $command = new Nudge(Direction::DOWN);
-        $game->process($command);
-
-        $events = $game->drainEventBuffer();
-
-        self::assertCount(1, $events);
-        self::assertInstanceOf(NudgeEvent::class, $events[0]);
-        self::assertSame(Direction::DOWN, $events[0]->direction);
-    }
-
-    #[Test]
-    public function process_rejects_nudge_command_when_game_is_ended(): void
-    {
-        $uuid = Uuid::uuid4();
-        $game = new SUT($uuid);
-
-        $game->loadEvents(
-            new Start(self::getJsonData('four-player-large-start')),
-            new Turn(self::getJsonData('four-player-large-move1')),
-            new Turn(self::getJsonData('four-player-large-move2')),
-            new Turn(self::getJsonData('four-player-large-move3')),
-            new Turn(self::getJsonData('four-player-large-move4')),
-            new End(self::getJsonData('four-player-large-end')),
-        );
-
-        $command = new Nudge(Direction::DOWN);
-        try {
-            $game->process($command);
-            $this->fail('command should not be accepted');
-        } catch (InvalidState $e) {
-        }
-
-        $events = $game->drainEventBuffer();
-        self::assertCount(0, $events);
-    }
-
-    #[Test]
-    public function nudge_event_tracks_last_nudge(): void
-    {
-        $uuid = Uuid::uuid4();
-        $game = new SUT($uuid);
-
-        $game->loadEvents(
-            new Start(self::getJsonData('four-player-large-start')),
-            new Turn(self::getJsonData('four-player-large-move1')),
-            new Turn(self::getJsonData('four-player-large-move2')),
-            new Turn(self::getJsonData('four-player-large-move3')),
-            new Turn(self::getJsonData('four-player-large-move4')),
-            new End(self::getJsonData('four-player-large-end')),
-        );
-
-        self::assertNull($game->getLastNudge());
-
-        $game->addEvent(new NudgeEvent(Direction::DOWN));
-        self::assertSame(Direction::DOWN, $game->getLastNudge());
-
-        $game->addEvent(new NudgeEvent(Direction::UP));
-        self::assertSame(Direction::UP, $game->getLastNudge());
-    }
 
     #[Test]
     public function can_add_new_events(): void

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace BattleSnake\Eventsource;
 
 use BattleSnake\Event\End;
-use BattleSnake\Event\Nudge;
 use BattleSnake\Event\Start;
 use BattleSnake\Event\Turn;
 use BattleSnake\Tests\Unit\Eventsource\EventFixture;
@@ -21,7 +20,6 @@ readonly class EventWrapper
             'start' => Start::class,
             'end' => End::class,
             'turn' => Turn::class,
-            'nudge' => Nudge::class,
             ],
         )]
         public Event $event,
