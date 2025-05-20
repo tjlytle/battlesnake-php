@@ -15,7 +15,6 @@ use BattleSnake\Middleware\DispatchMiddleware;
 use BattleSnake\Middleware\JsonParser;
 use BattleSnake\Projection\GameStatListener;
 use BattleSnake\Root\RootRepository;
-use BattleSnake\Root\SnapshotRepository;
 use BattleSnake\Strategy\Random;
 use Crell\Serde\SerdeCommon;
 use Crell\Tukio\Dispatcher;
@@ -117,11 +116,7 @@ class Application implements ListenerProviderInterface
             '/move',
             new MoveHandler(
                 $this->response_factory,
-                new SnapshotRepository(
-                    $this->event_repository,
-                    $this->root_repository,
-                    $this->connection,
-                ),
+                $this->root_repository,
                 new Random(),
             ),
         );
