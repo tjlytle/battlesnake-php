@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace BattleSnake\Core;
 
 use BattleSnake\Eventsource\EventRepository;
-use BattleSnake\Eventsource\Payload;
 use BattleSnake\Handler\EndHandler;
 use BattleSnake\Handler\InfoHandler;
 use BattleSnake\Handler\MoveHandler;
@@ -13,27 +12,20 @@ use BattleSnake\Handler\NotFoundHandler;
 use BattleSnake\Handler\StartHandler;
 use BattleSnake\Middleware\DispatchMiddleware;
 use BattleSnake\Middleware\JsonParser;
-use BattleSnake\Projection\GameStatListener;
 use BattleSnake\Root\RootRepository;
 use BattleSnake\Strategy\Random;
 use Crell\Serde\SerdeCommon;
-use Crell\Tukio\Dispatcher;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Tools\DsnParser;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\ORMSetup;
 use Laminas\Diactoros\ServerRequestFactory;
-use Psr\EventDispatcher\ListenerProviderInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class Application implements ListenerProviderInterface
+class Application
 {
     public readonly Connection $connection;
-    public readonly EntityManager $entity_manager;
-    public readonly Dispatcher $event_dispatcher;
     public readonly EventRepository $event_repository;
     private QueueRequestHandler $queue_handler;
     public readonly RootRepository $root_repository;
@@ -52,40 +44,10 @@ class Application implements ListenerProviderInterface
         $dsn_parser = new DsnParser(['mysql' => 'pdo_mysql']);
         $connection_params = $dsn_parser->parse($this->config->dsn);
         $this->connection = DriverManager::getConnection($connection_params);
-
-        // Setup Doctrine ORM configuration
-        $config = ORMSetup::createAttributeMetadataConfiguration(
-            [__DIR__ . '/../Projection'], // Entity directory paths
-            true, // Dev mode
-        );
-
-        // Create the entity manager with the existing connection
-        $this->entity_manager = new EntityManager($this->connection, $config);
-    }
-
-    #[\Override]
-    public function getListenersForEvent(object $event): iterable
-    {
-        if (! ($event instanceof Payload)) {
-            return [];
-        }
-
-        return match ($event->event::class) {
-            'BattleSnake\Event\End' => [
-                new GameStatListener(
-                    $this->entity_manager,
-                    $this->root_repository,
-                ),
-            ],
-            default => [],
-        };
     }
 
     private function setupEventsourcing(): void
     {
-        // Add event dispatcher / listener
-        $this->event_dispatcher = new Dispatcher($this);
-
         $serde = new SerdeCommon();
         $this->event_repository = new EventRepository(
             $this->connection,
@@ -94,7 +56,6 @@ class Application implements ListenerProviderInterface
 
         $this->root_repository = new RootRepository(
             $this->event_repository,
-            $this->event_dispatcher,
         );
     }
 

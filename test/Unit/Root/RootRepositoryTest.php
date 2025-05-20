@@ -38,58 +38,12 @@ class RootRepositoryTest extends TestCase
     protected function setUp(): void
     {
         $this->event_repository = $this->prophesize(EventRepository::class);
-        $this->dispatcher = $this->prophesize(EventDispatcherInterface::class);
 
         $this->sut = new SUT(
-            $this->event_repository->reveal(),
-            $this->dispatcher->reveal(),
+            $this->event_repository->reveal()
         );
     }
 
-    #[Test]
-    public function persist_dispatches_events(): void
-    {
-        $events = [
-            new Start(self::getJsonData('four-player-large-start')),
-            new Turn(self::getJsonData('four-player-large-move1')),
-            new Turn(self::getJsonData('four-player-large-move2')),
-            new Turn(self::getJsonData('four-player-large-move3')),
-            new Turn(self::getJsonData('four-player-large-move4')),
-            new Turn(self::getJsonData('four-player-large-move5')),
-            new Turn(self::getJsonData('four-player-large-move6')),
-            new Turn(self::getJsonData('four-player-large-move7')),
-        ];
-
-        $aggregate_id = Uuid::uuid4();
-        $game = new Game($aggregate_id);
-
-        $game->loadEvents(
-            $events[0],
-            $events[1],
-            $events[2],
-            $events[3],
-            $events[4],
-        );
-
-        $game->addEvent($events[5], $events[6], $events[7]);
-
-        $call_order = [];
-
-        $this->dispatcher->dispatch(Argument::cetera())->will(function ($args) use (&$call_order, $aggregate_id) {
-            TestCase::assertInstanceOf(Payload::class, $args[0]);
-            TestCase::assertSame($aggregate_id, $args[0]->uuid);
-            $call_order[] = $args[0]->event;
-            return $args[0];
-        })->shouldBeCalledTimes(3);
-
-        $this->sut->persist($game);
-
-        self::assertSame([
-            $events[5],
-            $events[6],
-            $events[7],
-        ], $call_order);
-    }
 
     #[Test]
     public function persist_creates_payloads_and_passes_to_EventRepository(): void
