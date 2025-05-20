@@ -152,7 +152,7 @@ class FourPlayerRoyalEnd extends JsonFixture
                 id: 'gs_vvdjWCFQmxhd9KQ67mv468xV',
                 name: 'Hungry Bot',
                 head: new Coordinate(7, 15),
-                latency: 1,
+                latency: '1',
                 customizations: new Customizations(
                     color: '#00cc00',
                     head: 'alligator',

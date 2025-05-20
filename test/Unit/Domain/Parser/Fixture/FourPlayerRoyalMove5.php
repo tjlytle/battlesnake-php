@@ -77,7 +77,7 @@ class FourPlayerRoyalMove5 extends JsonFixture
                 id: 'gs_vvdjWCFQmxhd9KQ67mv468xV',
                 name: 'Hungry Bot',
                 head: new Coordinate(8, 16),
-                latency: 1,
+                latency: '1',
                 customizations: new Customizations(
                     color: '#00cc00',
                     head: 'alligator',
