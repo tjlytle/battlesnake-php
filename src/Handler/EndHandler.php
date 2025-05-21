@@ -6,7 +6,8 @@ namespace BattleSnake\Handler;
 
 use BattleSnake\Domain\Parser\GameStateParserFactory;
 use BattleSnake\Event\End;
-use BattleSnake\Root\RootRepository;
+use BattleSnake\Eventsource\EventRepository;
+use BattleSnake\Eventsource\Payload;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -16,7 +17,7 @@ class EndHandler extends AbstractHandler
 {
     public function __construct(
         protected readonly ResponseFactoryInterface $response_factory,
-        protected readonly RootRepository $repository,
+        protected readonly EventRepository $repository,
     ) {
     }
 
@@ -27,9 +28,14 @@ class EndHandler extends AbstractHandler
 
         $game_id = Uuid::fromString($state->game->id);
 
-        $root = $this->repository->retrieve($game_id);
-        $root->addEvent(new End($state));
-        $this->repository->persist($root);
+        $past_events = $this->repository->get($game_id);
+
+        $this->repository->persist(new Payload(
+            $game_id,
+            \count($past_events),
+            new End($state),
+            new \DateTimeImmutable(),
+        ));
 
         return $this->response_factory->createResponse(204);
     }

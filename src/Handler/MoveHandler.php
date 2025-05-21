@@ -6,7 +6,8 @@ namespace BattleSnake\Handler;
 
 use BattleSnake\Domain\Parser\GameStateParserFactory;
 use BattleSnake\Event\Turn;
-use BattleSnake\Root\Repository;
+use BattleSnake\Eventsource\EventRepository;
+use BattleSnake\Eventsource\Payload;
 use BattleSnake\Strategy\Strategy;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -17,7 +18,7 @@ class MoveHandler extends AbstractHandler
 {
     public function __construct(
         protected readonly ResponseFactoryInterface $response_factory,
-        protected readonly Repository $repository,
+        protected readonly EventRepository $repository,
         protected readonly Strategy $strategy,
     ) {
     }
@@ -29,9 +30,14 @@ class MoveHandler extends AbstractHandler
 
         $game_id = Uuid::fromString($state->game->id);
 
-        $root = $this->repository->retrieve($game_id);
-        $root->addEvent(new Turn($state));
-        $this->repository->persist($root);
+        $past_events = $this->repository->get($game_id);
+
+        $this->repository->persist(new Payload(
+            $game_id,
+            \count($past_events),
+            new Turn($state),
+            new \DateTimeImmutable(),
+        ));
 
         $direction = ($this->strategy)($state);
 

@@ -33,9 +33,9 @@ class EventRepository
                     ],
                 );
             }
-
             $this->connection->commit();
         } catch (\Exception $e) {
+            \error_log($e->getMessage());
             $this->connection->rollBack();
 
             // Check if this is a duplicate key/integrity constraint violation

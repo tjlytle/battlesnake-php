@@ -12,7 +12,6 @@ use BattleSnake\Handler\NotFoundHandler;
 use BattleSnake\Handler\StartHandler;
 use BattleSnake\Middleware\DispatchMiddleware;
 use BattleSnake\Middleware\JsonParser;
-use BattleSnake\Root\RootRepository;
 use BattleSnake\Strategy\Random;
 use Crell\Serde\SerdeCommon;
 use Doctrine\DBAL\Connection;
@@ -28,7 +27,6 @@ class Application
     public readonly Connection $connection;
     public readonly EventRepository $event_repository;
     private QueueRequestHandler $queue_handler;
-    public readonly RootRepository $root_repository;
 
     public function __construct(
         private readonly ResponseFactoryInterface $response_factory,
@@ -53,10 +51,6 @@ class Application
             $this->connection,
             $serde,
         );
-
-        $this->root_repository = new RootRepository(
-            $this->event_repository,
-        );
     }
 
     private function setupHandlers(): void
@@ -70,14 +64,14 @@ class Application
             '/start',
             new StartHandler(
                 $this->response_factory,
-                $this->root_repository,
+                $this->event_repository,
             ),
         );
         $api_dispatch->addRoute(
             '/move',
             new MoveHandler(
                 $this->response_factory,
-                $this->root_repository,
+                $this->event_repository,
                 new Random(),
             ),
         );
@@ -85,7 +79,7 @@ class Application
             '/end',
             new EndHandler(
                 $this->response_factory,
-                $this->root_repository,
+                $this->event_repository,
             ),
         );
 
